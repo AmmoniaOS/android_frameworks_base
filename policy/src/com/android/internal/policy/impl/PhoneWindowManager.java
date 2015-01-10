@@ -5010,6 +5010,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
                 if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
                     if (down) {
+                        TelecomManager telecomManager = getTelecommService();
+                        if (telecomManager != null) {
+                            if (telecomManager.isRinging()) {
+                                // The volume key answer
+                                if (mVolumeAnswer) {
+                                    telecomManager.acceptRingingCall();
+                                }
+                            }
+                        }
                         if (interactive && !mVolumeDownKeyTriggered
                                 && (event.getFlags() & KeyEvent.FLAG_FALLBACK) == 0) {
                             mVolumeDownKeyTriggered = true;
@@ -5041,7 +5050,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     TelecomManager telecomManager = getTelecommService();
                     if (telecomManager != null) {
                         if (telecomManager.isRinging()) {
-                            // The volume key answer
+                           // The volume key answer
                            if (mVolumeAnswer) {
                                  telecomManager.acceptRingingCall();
                             }
