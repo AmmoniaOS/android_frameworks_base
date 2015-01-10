@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
->>>>>>> cm/cm-12.0
 import android.text.method.SingleLineTransformationMethod;
 import android.text.TextUtils;
 import android.util.AttributeSet;
