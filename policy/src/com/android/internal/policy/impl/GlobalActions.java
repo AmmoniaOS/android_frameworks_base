@@ -105,9 +105,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     /* Valid settings for global actions keys.
      * see config.xml config_globalActionList */
-    private static final String GLOBAL_ACTION_KEY_SCREENSHOT = "screenshot";
     private static final String GLOBAL_ACTION_KEY_POWER = "power";
     private static final String GLOBAL_ACTION_KEY_REBOOT = "reboot";
+    private static final String GLOBAL_ACTION_KEY_SCREENSHOT = "screenshot";
     private static final String GLOBAL_ACTION_KEY_AIRPLANE = "airplane";
     private static final String GLOBAL_ACTION_KEY_BUGREPORT = "bugreport";
     private static final String GLOBAL_ACTION_KEY_SILENT = "silent";
@@ -286,12 +286,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 // If we already have added this, don't add it again.
                 continue;
             }
-            if (GLOBAL_ACTION_KEY_SCREENSHOT.equals(actionKey)) {
-                mItems.add(new ScreenshotAction());
-            } else if (GLOBAL_ACTION_KEY_POWER.equals(actionKey)) {
+            if (GLOBAL_ACTION_KEY_POWER.equals(actionKey)) {
                 mItems.add(new PowerAction());
             } else if (GLOBAL_ACTION_KEY_REBOOT.equals(actionKey)) {
                 mItems.add(new RebootAction());
+            } else if (GLOBAL_ACTION_KEY_SCREENSHOT.equals(actionKey)) {
+                mItems.add(new ScreenshotAction());
             } else if (GLOBAL_ACTION_KEY_AIRPLANE.equals(actionKey)) {
                 mItems.add(mAirplaneModeOn);
             } else if (GLOBAL_ACTION_KEY_BUGREPORT.equals(actionKey)) {
@@ -451,33 +451,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
     }
 
-    private final class ScreenshotAction extends SinglePressAction implements LongPressAction {
-        private ScreenshotAction() {
-            super(com.android.internal.R.drawable.ic_lock_screenshot,
-                R.string.global_action_screenshot);
-        }
-
-        @Override
-        public boolean onLongPress() {
-            return true;
-        }
-
-        @Override
-        public boolean showDuringKeyguard() {
-            return true;
-        }
-
-        @Override
-        public boolean showBeforeProvisioning() {
-            return true;
-        }
-
-        @Override
-        public void onPress() {
-            takeScreenshot();
-        }
-    }
-
     private final class PowerAction extends SinglePressAction implements LongPressAction {
         private PowerAction() {
             super(com.android.internal.R.drawable.ic_lock_power_off,
@@ -541,6 +514,24 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 return;
             }
         }
+    }
+
+    private Action ScreenshotAction() {
+        return new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot,
+                R.string.global_action_screenshot) {
+
+            public void onPress() {
+                takeScreenshot();
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return true;
+            }
+        };
     }
 
     private Action getBugReportAction() {
