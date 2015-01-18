@@ -589,7 +589,7 @@ public final class PowerManager {
     public void userActivity(long when, int event, int flags) {
         try {
             mService.userActivity(when, event, flags);
-            setPowerSaveMode((Powerstate() ? false : true));
+            if (Powerstate()) setPowerSaveMode(false);
         } catch (RemoteException e) {
         }
     }
@@ -641,7 +641,7 @@ public final class PowerManager {
     public void goToSleep(long time, int reason, int flags) {
         try {
             mService.goToSleep(time, reason, flags);
-            setPowerSaveMode(Powerstate());
+            if (Powerstate()) setPowerSaveMode(true);
         } catch (RemoteException e) {
         }
     }
