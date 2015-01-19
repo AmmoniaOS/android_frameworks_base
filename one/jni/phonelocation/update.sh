@@ -19,6 +19,6 @@
 
 make
 ./generateData Mps -c phonelocation.txt
-cp phonelocation.dat $dirname $(dirname $(dirname $(dirname $(pwd))))/data/location/phonelocation.dat
+cp one-location.dat $dirname $(dirname $(dirname $(dirname $(pwd))))/data/location/one-location.dat
 make clean
-rm phonelocation.dat
+rm one-location.dat

@@ -27,7 +27,7 @@
 
 #ifdef DEBUG
 #include <android/log.h>
-#define TAG_JNI = "phonelocation"
+#define TAG_JNI = "one-location"
 #endif
 
 /*
