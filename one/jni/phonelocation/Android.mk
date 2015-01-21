@@ -21,7 +21,7 @@ include $(CLEAR_VARS)
 
 LOCAL_CFLAGS := -O3
 LOCAL_CXXFLAGS := -O3
-LOCAL_MODULE    := phonelocation
+LOCAL_MODULE    := phone-location
 LOCAL_SRC_FILES := Global.cpp Mps.cpp phonelocation.c androidjni.c
 LOCAL_C_INCLUDES += $(JNI_H_INCLUDE)
 LOCAL_PRELINK_MODULE := false

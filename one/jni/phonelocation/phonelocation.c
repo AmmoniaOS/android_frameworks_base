@@ -25,7 +25,7 @@
 #include <cutils/properties.h>
 
 //#ifdef DEBUG
-#define TAG "phonelocation"
+#define TAG "phone-location"
 //#endif
 
 #define MAX_PHONE_LEN 20
