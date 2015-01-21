@@ -754,14 +754,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         };
                         msg.replyTo = new Messenger(h);
                         msg.arg1 = msg.arg2 = 0;
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ie) {
-                        }
 
-                        try {
-                            messenger.send(msg);
-                        } catch (RemoteException e) {
                         /*  remove for the time being
                         if (mStatusBar != null && mStatusBar.isVisibleLw())
                             msg.arg1 = 1;
@@ -787,8 +780,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 @Override
                 public void onServiceDisconnected(ComponentName name) {}
             };
-
-            if (mContext.bindServiceAsUser(intent, conn, Context.BIND_AUTO_CREATE, UserHandle.CURRENT)) {
             if (mContext.bindService(intent, conn, Context.BIND_AUTO_CREATE)) {
                 mScreenshotConnection = conn;
                 mHandler.postDelayed(mScreenshotTimeout, 10000);
