@@ -3212,6 +3212,12 @@ public final class Settings {
         public static final String CARRIER_SIZE = "carrier_size";
 
         /**
+         * smarter brightness.
+         * int (0: off or 1: on).
+         */
+        public static final String SMARTER_BRIGHTNESS = "smarter_brightness";
+
+        /**
          * Whether to wake the screen with the home key, the value is boolean.
          * @hide
          */
