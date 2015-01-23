@@ -3194,16 +3194,22 @@ public final class Settings {
         public static final String KEY_APP_SWITCH_LONG_PRESS_ACTION = "key_app_switch_long_press_action";
         
         /**
-         * show carrier in statusbar. The value is
-         * int (1: Show or 0: Hide).
+         * show carrier.
+         * int (0: Show or 0: Hide).
          */
-        public static final String STATUS_BAR_CARRIER = "status_bar_carrier";
+        public static final String SHOW_CARRIER = "show_carrier";
 
         /**
          * custom carrier label. The value is
          * String.
          */
         public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
+        
+        /**
+         * carrier size.
+         * int (0: default or 1: Small or 2: Big).
+         */
+        public static final String CARRIER_SIZE = "carrier_size";
 
         /**
          * Whether to wake the screen with the home key, the value is boolean.

@@ -443,7 +443,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CARRIER), false, this);
+                    Settings.System.SHOW_CARRIER), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.POWER_SAVE_SETTINGS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -468,7 +468,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mPowerSaveState = 1 == Settings.System.getInt(resolver,
                   Settings.System.POWER_SAVE_SETTINGS, 0);
             mShowStatusBarCarrier = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_CARRIER, 0, mCurrentUserId) == 1;
+                Settings.System.SHOW_CARRIER, 0, mCurrentUserId) == 1;
             showStatusBarCarrierLabel(mShowStatusBarCarrier);
             setPowerSaveSettings(mPowerSaveState);
 

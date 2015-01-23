@@ -38,6 +38,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import android.util.DisplayMetrics;
+
 import com.android.systemui.R;
 
 public class CarrierLabel extends TextView {
@@ -47,6 +49,8 @@ public class CarrierLabel extends TextView {
     private static boolean isCN;
 
     private Context mContext;
+
+    private static int CarrierLabelSizeNumber = 5;
 
     public CarrierLabel(Context context) {
         this(context, null);
@@ -116,6 +120,13 @@ public class CarrierLabel extends TextView {
         } else {
             str = "";
         }
+        int UpdateSizeStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
+           Settings.System.CARRIER_SIZE, 0, UserHandle.USER_CURRENT);
+        DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
+        int CarrierLabelSize = (int) ((UpdateSizeStyle == CarrierLabelSizeNumber ?
+           CarrierLabelSizeNumber : UpdateSizeStyle) * dm.density);
+        setTextSize(CarrierLabelSize);
+
         String customCarrierLabel = Settings.System.getStringForUser(mContext.getContentResolver(),
                 Settings.System.CUSTOM_CARRIER_LABEL, UserHandle.USER_CURRENT);
         if (!TextUtils.isEmpty(customCarrierLabel)) {

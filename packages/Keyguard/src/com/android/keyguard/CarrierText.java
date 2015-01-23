@@ -35,6 +35,8 @@ import com.android.internal.widget.LockPatternUtils;
 
 import java.util.Locale;
 
+import android.util.DisplayMetrics;
+
 public class CarrierText extends TextView {
     private static final String TAG = "CarrierText";
     private static final boolean DEBUG = KeyguardConstants.DEBUG;
@@ -46,6 +48,8 @@ public class CarrierText extends TextView {
 
     private boolean mDisplayAirplaneMode;
     private boolean mAirplaneModeActive;
+
+    private static int CarrierLabelSizeNumber = 5;
 
     private KeyguardUpdateMonitorCallback mCallback = new KeyguardUpdateMonitorCallback() {
         @Override
@@ -165,13 +169,23 @@ public class CarrierText extends TextView {
             }
             text.append(carrierText);
         }
+        int UpdateSizeStyle = Settings.System.getIntForUser(getContext().getContentResolver(),
+           Settings.System.CARRIER_SIZE, 0, UserHandle.USER_CURRENT);
+        DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
+        int CarrierLabelSize = (int) ((UpdateSizeStyle == CarrierLabelSizeNumber ?
+           CarrierLabelSizeNumber : UpdateSizeStyle) * dm.density);
+        setTextSize(CarrierLabelSize);
+
         String customCarrierLabel = Settings.System.getStringForUser(getContext().getContentResolver(),
            Settings.System.CUSTOM_CARRIER_LABEL, UserHandle.USER_CURRENT);
+        boolean show = Settings.System.getIntForUser(getContext().getContentResolver(),
+           Settings.System.SHOW_CARRIER, 0, UserHandle.USER_CURRENT) == 1;
         if (!TextUtils.isEmpty(customCarrierLabel)) {
             setText(customCarrierLabel);
         } else {
             setText(text);
         }
+        setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     /**
