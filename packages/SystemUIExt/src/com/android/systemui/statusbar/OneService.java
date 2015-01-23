@@ -125,7 +125,9 @@ public class OneService extends SystemUI {
     private void UpdateSettings() {
         boolean smarterBrightness = Settings.System.getIntForUser(mContext.getContentResolver(),
              Settings.System.SMARTER_BRIGHTNESS, 0, UserHandle.USER_CURRENT) == 1;
-        if (smarterBrightness) UpdateAMPM();
+        if (smarterBrightness) {
+            mReceiver.UpdateAMPM();
+        }
     }
 }
 
