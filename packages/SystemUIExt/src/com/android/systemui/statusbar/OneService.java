@@ -70,13 +70,13 @@ public class OneService extends SystemUI {
             int ampm = cd.get(Calendar.AM_PM);
             if (ampm == Calendar.AM) {
                   if (hours < 6) {
-                      UpdateBrightness(10);
+                      UpdateBrightness(2);
                   } else if (hours >= 6 && hours < 7) {
                       UpdateBrightness(50);
                   } else if (hours >= 7 && hours < 12) {
                       UpdateBrightness(100);
                   } else {
-                      UpdateBrightness(10);
+                      UpdateBrightness(2);
                   }
             } else {
                 if (hours < 9) {
@@ -84,9 +84,9 @@ public class OneService extends SystemUI {
                 } else if (hours >= 9 && hours < 11) {
                     UpdateBrightness(30);
                 } else if (hours >= 11 && hours <= 12) {
-                    UpdateBrightness(10);
+                    UpdateBrightness(2);
                 } else {
-                    UpdateBrightness(10);
+                    UpdateBrightness(2);
                 }
            }
        }
