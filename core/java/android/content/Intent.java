@@ -2189,6 +2189,18 @@ public class Intent implements Parcelable, Cloneable {
             = "android.intent.action.CUSTOM_CARRIER_LABEL";
 
     /**
+     * Broadcast Action: check android one api server.
+     */
+    public static final String ACTION_ONE_API
+            = "android.intent.action.one_api";
+
+    /**
+     * Broadcast Action: check android one ota api server.
+     */
+    public static final String ACTION_ONE_API_OTA
+            = "android.intent.action.one_api_ota";
+
+    /**
      * Broadcast Action: A GTalk connection has been established.
      */
     @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)

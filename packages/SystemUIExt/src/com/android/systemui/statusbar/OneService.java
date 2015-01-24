@@ -20,6 +20,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import java.util.Calendar;
 
+import com.android.internal.util.one.OneUtils;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -37,6 +38,23 @@ import android.os.PowerManager;
 import android.os.ServiceManager;
 import android.os.RemoteException;
 import android.util.Log;
+import android.text.TextUtils;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import com.android.systemui.SystemUI;
 
@@ -46,9 +64,13 @@ public class OneService extends SystemUI {
     private final Handler mHandler = new Handler();
     private final Receiver mReceiver = new Receiver();
 
+    private ApiUI mApi;
+
     public void start() {
+        mApi = new OneNotification(mContext);
         mReceiver.init();
-        UpdateSettings();
+        UpdateScreenUI();
+       // UpdateOneUI();
     }
 
     private final class Receiver extends BroadcastReceiver {
@@ -114,20 +136,64 @@ public class OneService extends SystemUI {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_TIME_TICK)) {
-                // Push Service Init ...
                 // smarter aviate Init ...
                 // smarter remind Init ...
-                UpdateSettings();
+                UpdateScreenUI();
+               // UpdateOneUI();
             }
-            UpdateSettings();
+            UpdateScreenUI();
+           // UpdateOneUI();
         }
     };
-    private void UpdateSettings() {
+
+    private void UpdateScreenUI() {
         boolean smarterBrightness = Settings.System.getIntForUser(mContext.getContentResolver(),
              Settings.System.SMARTER_BRIGHTNESS, 0, UserHandle.USER_CURRENT) == 1;
         if (smarterBrightness) {
             mReceiver.UpdateAMPM();
         }
+        mApi.update(OneUtils.isOnline(mContext));
+    }
+
+    private void UpdateOneUI() {
+        AsyncTask.execute(new Runnable() {
+             public void run() {
+                     HttpPost httpRequest = new HttpPost(mContext.getString(R.string.conf_api_server_url));
+	             List<NameValuePair> params = new ArrayList<NameValuePair>();
+	             params.add(new BasicNameValuePair("country", null));
+	             params.add(new BasicNameValuePair("state", null));
+	             params.add(new BasicNameValuePair("device", null));
+	             params.add(new BasicNameValuePair("vertion", null));
+	             params.add(new BasicNameValuePair("md5", null));
+	             try {
+	                 HttpEntity httpEntity = new UrlEncodedFormEntity(params,"utf-8");
+	                 httpRequest.setEntity(httpEntity);
+	                 HttpClient httpClient = new DefaultHttpClient();
+	                 HttpResponse httpResponse = httpClient.execute(httpRequest);
+	                 if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+	                     String result = EntityUtils.toString(httpResponse.getEntity());
+                             if (!TextUtils.isEmpty(result)) {
+                                 Intent i = new Intent();
+                                 i.setAction(Intent.ACTION_ONE_API_OTA);
+                                 i.putExtra("message", result);
+                                 mContext.sendBroadcast(i);
+                             }
+	                 }else{
+	                    Log.w(TAG, "error");
+	                 }
+	             } catch (UnsupportedEncodingException e) {
+	                  e.printStackTrace();
+	             } catch (ClientProtocolException e) {
+	                  e.printStackTrace();
+	             } catch (IOException e) {
+	                  e.printStackTrace();
+	             }
+              }
+         });
+    }
+
+    public interface ApiUI {
+	   void update(boolean cm);
     }
 }
 
