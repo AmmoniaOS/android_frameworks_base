@@ -39,22 +39,6 @@ import android.os.ServiceManager;
 import android.os.RemoteException;
 import android.util.Log;
 import android.text.TextUtils;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
 import com.android.systemui.SystemUI;
 
@@ -64,13 +48,12 @@ public class OneService extends SystemUI {
     private final Handler mHandler = new Handler();
     private final Receiver mReceiver = new Receiver();
 
-    private ApiUI mApi;
+    private OneRefreshUI mOneUI;
 
     public void start() {
-        mApi = new OneNotification(mContext);
+        mOneUI = new OneUI(mContext);
         mReceiver.init();
         UpdateScreenUI();
-       // UpdateOneUI();
     }
 
     private final class Receiver extends BroadcastReceiver {
@@ -139,10 +122,8 @@ public class OneService extends SystemUI {
                 // smarter aviate Init ...
                 // smarter remind Init ...
                 UpdateScreenUI();
-               // UpdateOneUI();
             }
             UpdateScreenUI();
-           // UpdateOneUI();
         }
     };
 
@@ -152,47 +133,10 @@ public class OneService extends SystemUI {
         if (smarterBrightness) {
             mReceiver.UpdateAMPM();
         }
-        mApi.update(OneUtils.isOnline(mContext));
+        // mOneUI.update(OneUtils.isOnline(mContext));
     }
 
-    private void UpdateOneUI() {
-        AsyncTask.execute(new Runnable() {
-             public void run() {
-                     HttpPost httpRequest = new HttpPost(mContext.getString(R.string.conf_api_server_url));
-	             List<NameValuePair> params = new ArrayList<NameValuePair>();
-	             params.add(new BasicNameValuePair("country", null));
-	             params.add(new BasicNameValuePair("state", null));
-	             params.add(new BasicNameValuePair("device", null));
-	             params.add(new BasicNameValuePair("vertion", null));
-	             params.add(new BasicNameValuePair("md5", null));
-	             try {
-	                 HttpEntity httpEntity = new UrlEncodedFormEntity(params,"utf-8");
-	                 httpRequest.setEntity(httpEntity);
-	                 HttpClient httpClient = new DefaultHttpClient();
-	                 HttpResponse httpResponse = httpClient.execute(httpRequest);
-	                 if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-	                     String result = EntityUtils.toString(httpResponse.getEntity());
-                             if (!TextUtils.isEmpty(result)) {
-                                 Intent i = new Intent();
-                                 i.setAction(Intent.ACTION_ONE_API_OTA);
-                                 i.putExtra("message", result);
-                                 mContext.sendBroadcast(i);
-                             }
-	                 }else{
-	                    Log.w(TAG, "error");
-	                 }
-	             } catch (UnsupportedEncodingException e) {
-	                  e.printStackTrace();
-	             } catch (ClientProtocolException e) {
-	                  e.printStackTrace();
-	             } catch (IOException e) {
-	                  e.printStackTrace();
-	             }
-              }
-         });
-    }
-
-    public interface ApiUI {
+    public interface OneRefreshUI {
 	   void update(boolean cm);
     }
 }
