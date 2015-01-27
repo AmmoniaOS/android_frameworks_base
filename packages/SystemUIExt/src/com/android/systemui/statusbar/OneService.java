@@ -48,6 +48,11 @@ public class OneService extends SystemUI {
     private final Handler mHandler = new Handler();
     private final Receiver mReceiver = new Receiver();
 
+    private int SmallHours;
+    private int MorningHours;
+    private int NoonHours;
+    private int NightHours;
+
     private OneRefreshUI mOneUI;
 
     public void start() {
@@ -65,6 +70,7 @@ public class OneService extends SystemUI {
             filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
             filter.addAction(Intent.ACTION_USER_SWITCHED);
+            filter.addAction(Intent.ACTION_SCREENUI_SWITCHED);
             mContext.registerReceiver(this, filter, null, mHandler);
         }
 
@@ -75,21 +81,17 @@ public class OneService extends SystemUI {
             int ampm = cd.get(Calendar.AM_PM);
             if (ampm == Calendar.AM) {
                   if (hours < 6) {
-                      UpdateBrightness(2);
-                  } else if (hours >= 6 && hours < 7) {
-                      UpdateBrightness(50);
-                  } else if (hours >= 7 && hours < 12) {
-                      UpdateBrightness(100);
+                      UpdateBrightness((SmallHours == 0 ? 2 : SmallHours));
+                  } else if (hours >= 6 && hours < 12) {
+                      UpdateBrightness((MorningHours == 0 ? 120 : MorningHours));
                   } else {
                       UpdateBrightness(2);
                   }
             } else {
-                if (hours < 9) {
-                    UpdateBrightness(100);
-                } else if (hours >= 9 && hours < 11) {
-                    UpdateBrightness(30);
-                } else if (hours >= 11 && hours <= 12) {
-                    UpdateBrightness(2);
+                if (hours < 6) {
+                    UpdateBrightness((NoonHours == 0 ? 120 : NoonHours));
+                } else if (hours >= 6 && hours < 12) {
+                    UpdateBrightness((NightHours == 0 ? 50 : NightHours));
                 } else {
                     UpdateBrightness(2);
                 }
@@ -128,6 +130,16 @@ public class OneService extends SystemUI {
     };
 
     private void UpdateScreenUI() {
+
+        SmallHours = Settings.System.getIntForUser(mContext.getContentResolver(),
+             Settings.System.SMALL_BRIGHTNESS, 0, UserHandle.USER_CURRENT);
+        MorningHours = Settings.System.getIntForUser(mContext.getContentResolver(),
+             Settings.System.MORNING_BRIGHTNESS, 0, UserHandle.USER_CURRENT);
+        NoonHours = Settings.System.getIntForUser(mContext.getContentResolver(),
+             Settings.System.NOON_BRIGHTNESS, 0, UserHandle.USER_CURRENT);
+        NightHours = Settings.System.getIntForUser(mContext.getContentResolver(),
+             Settings.System.NIGHT_BRIGHTNESS, 0, UserHandle.USER_CURRENT);
+
         boolean smarterBrightness = Settings.System.getIntForUser(mContext.getContentResolver(),
              Settings.System.SMARTER_BRIGHTNESS, 0, UserHandle.USER_CURRENT) == 1;
         if (smarterBrightness) {

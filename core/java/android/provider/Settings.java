@@ -3213,6 +3213,14 @@ public final class Settings {
         public static final String SMARTER_BRIGHTNESS = "smarter_brightness";
 
         /**
+         * changes brightness.
+         */
+        public static final String SMALL_BRIGHTNESS = "small_brightness";
+        public static final String MORNING_BRIGHTNESS = "morning_brightness";
+        public static final String NOON_BRIGHTNESS = "noon_brightness";
+        public static final String NIGHT_BRIGHTNESS = "night_brightness";
+
+        /**
          * Whether to wake the screen with the home key, the value is boolean.
          * @hide
          */
