@@ -3221,6 +3221,11 @@ public final class Settings {
         public static final String NIGHT_BRIGHTNESS = "night_brightness";
 
         /**
+         * use second date.
+         */
+        public static final String CLOCK_USE_SECOND = "clock_second";
+
+        /**
          * Whether to wake the screen with the home key, the value is boolean.
          * @hide
          */
