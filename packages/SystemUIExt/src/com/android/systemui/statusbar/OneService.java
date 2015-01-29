@@ -43,6 +43,7 @@ import android.text.TextUtils;
 import com.android.systemui.SystemUI;
 
 public class OneService extends SystemUI {
+
     static final String TAG = "OneService";
 
     private final Handler mHandler = new Handler();
@@ -53,10 +54,7 @@ public class OneService extends SystemUI {
     private int NoonHours;
     private int NightHours;
 
-    private OneRefreshUI mOneUI;
-
     public void start() {
-        mOneUI = new OneUI(mContext);
         mReceiver.init();
         UpdateScreenUI();
     }
@@ -145,11 +143,6 @@ public class OneService extends SystemUI {
         if (smarterBrightness) {
             mReceiver.UpdateAMPM();
         }
-        // mOneUI.update(OneUtils.isOnline(mContext));
-    }
-
-    public interface OneRefreshUI {
-	   void update(boolean cm);
     }
 }
 

@@ -78,7 +78,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:singleLine="true"
-                    android:paddingEnd="6dip"
                     android:gravity="center"
                     android:visibility="gone"
                     />
@@ -127,7 +126,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:singleLine="true"
-                android:paddingStart="7dp"
                 android:gravity="center_vertical|start"
                 />
         </com.android.keyguard.AlphaOptimizedLinearLayout>
