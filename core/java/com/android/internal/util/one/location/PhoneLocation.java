@@ -16,6 +16,8 @@
 
 package com.android.internal.util.one;
 
+import android.text.TextUtils;
+
 public final class PhoneLocation {
 
     private static String PHONE;
@@ -59,11 +61,10 @@ public final class PhoneLocation {
         return getPosFromPhone(num, 0);
     }
 
-    public static String getCityFromPhone(String num) {
-	num=(num.replace("-", "")).replace(" ", "");
-        String PhoneLocationStr=getPosFromPhone(num, 1);  		
-        return (null == PhoneLocationStr ? "" : PhoneLocationStr);
-
+    public static String getCityFromPhone(CharSequence number) {
+        if (TextUtils.isEmpty(number)) return "";
+        String phoneLocation = getPosFromPhone(number.toString().replaceAll("(?:-| )", ""), 1);
+        return (TextUtils.isEmpty(phoneLocation) ? "" : phoneLocation);
     }
 }
 
