@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 The New One Android
+ * Copyright (C) 2015 The Android One
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,31 @@ import android.net.NetworkInfo;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
+import java.io.File;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import java.util.Locale;
 
 /**
 * @hide
 */
 
 public class OneUtils {
+
+    public static String FILEPATH = "data/data/com.android.systemui/files";
+    public static String DB_FILE_NAME = "one-location.db";
+    private static String TABLE_NAME = "location_date";
+
+    private static String location;
+    private static String[] numm;
+
+    private static String NUMBER_INDEX = "number=?";
+
+    private static int LOCATION = 2;
+    private static int CITY = 3;
+
+    private static SQLiteDatabase db = null;
 
     public static boolean isSupportLanguage(boolean excludeTW) {
         Configuration configuration = Resources.getSystem().getConfiguration();
@@ -91,13 +110,34 @@ public class OneUtils {
         if (size < 1024) {
             fileSizeString = df.format((double) size) + "B";
         } else if (size < 1048576) {
-            fileSizeString = df.format((double) size / 1024) + "K";
+            fileSizeString = df.format((double) size / 1024) + "KB";
         } else if (size < 1073741824) {
-            fileSizeString = df.format((double) size / 1048576) + "M";
+            fileSizeString = df.format((double) size / 1048576) + "MB";
         } else {
-            fileSizeString = df.format((double) size / 1073741824) + "G";
+            fileSizeString = df.format((double) size / 1073741824) + "GB";
         }
         return fileSizeString;
+    }
+
+    public static String getCityFromPhone(CharSequence number) {
+        if (TextUtils.isEmpty(number)) return "";
+            File data = new File(FILEPATH, DB_FILE_NAME);
+            db = SQLiteDatabase.openOrCreateDatabase(data, null);
+            db.setLocale(Locale.CHINA);
+            number = number.toString().replaceAll("(?:-| )", "");
+            if (number.length() < 6 ){
+                numm = new String[]{ ((String) number.subSequence(0, number.length())) };
+            } else {
+                numm = new String[]{ ((String) number.subSequence(0, 6)) };
+            }
+            Cursor cursor = db.query(TABLE_NAME, null, NUMBER_INDEX,
+              numm, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                location = cursor.getString(LOCATION) + cursor.getString(CITY);
+            } else {
+                location = "未知号码";
+            }
+        return (TextUtils.isEmpty(location) ? "" : location);
     }
 
 }
