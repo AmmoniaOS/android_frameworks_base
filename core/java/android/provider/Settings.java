@@ -7437,9 +7437,15 @@ public final class Settings {
 
         /**
          * changes smarter sleep.
-         * int 0-on or >0 changes sleep mode.
+         * int 0-off or > 0 changes sleep mode.
          */
         public static final String SMARTER_SLEEP = "smarter_sleep";
+
+        /**
+         * changes smarter airplane.
+         * int 0-off or 1-on changes airplane mode.
+         */
+        public static final String SMARTER_AIRPLANE = "smarter_airplane";
 
         /**
          * Whether to sound when charger power is connected/disconnected

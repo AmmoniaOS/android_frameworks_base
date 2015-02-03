@@ -20,6 +20,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import java.util.Calendar;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
 
 import com.android.internal.util.one.OneUtils;
 import android.content.BroadcastReceiver;
@@ -57,11 +58,14 @@ public class OneService extends SystemUI {
     private int NightHours;
 
     private int mSmarterSleep;
+    private boolean mSmarterAirplane;
 
     private AudioManager audioMgr;
+    private ConnectivityManager mgr;
 
     public void start() {
         audioMgr = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        mgr = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         ContentObserver obs = new ContentObserver(mHandler) {
             @Override
             public void onChange(boolean selfChange) {
@@ -74,6 +78,9 @@ public class OneService extends SystemUI {
                 false, obs, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.SMARTER_SLEEP),
+                false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.SMARTER_AIRPLANE),
                 false, obs, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.SMALL_BRIGHTNESS),
@@ -111,9 +118,11 @@ public class OneService extends SystemUI {
             int ampm = cd.get(Calendar.AM_PM);
             if (ampm == Calendar.AM) {
                   if (hours < 6) {
+                      mgr.setAirplaneMode(mSmarterAirplane);
                       audioMgr.setRingerMode((mSmarterSleep == 1 ? 0 : 2));
                       UpdateBrightness((SmallHours == 0 ? 2 : SmallHours));
                   } else if (hours >= 6 && hours < 12) {
+                      mgr.setAirplaneMode(false);
                       audioMgr.setRingerMode((mSmarterSleep == 2 ? 0 : 2));
                       UpdateBrightness((MorningHours == 0 ? 120 : MorningHours));
                   } else {
@@ -155,8 +164,6 @@ public class OneService extends SystemUI {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_TIME_TICK)) {
-                // smarter aviate Init ...
-                // smarter remind Init ...
                 UpdateSettings();
             }
             UpdateSettings();
@@ -176,8 +183,11 @@ public class OneService extends SystemUI {
 
         mSmarterSleep = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.SMARTER_SLEEP, 0);
+        mSmarterAirplane = Settings.Global.getInt(mContext.getContentResolver(),
+             Settings.Global.SMARTER_AIRPLANE, 0) == 1;
 
         mReceiver.UpdateAMPM();
     }
+
 }
 
