@@ -125,11 +125,9 @@ public class OneUtils {
             db = SQLiteDatabase.openOrCreateDatabase(data, null);
             db.setLocale(Locale.CHINA);
             number = number.toString().replaceAll("(?:-| )", "");
-            if (number.length() < 6 ){
-                numm = new String[]{ ((String) number.subSequence(0, number.length())) };
-            } else {
-                numm = new String[]{ ((String) number.subSequence(0, 6)) };
-            }
+            numm = new String[]{ ((String) number.subSequence(0,
+            ((String) number).startsWith("0",0) ? 3 : (number.length() < 6 ?
+              number.length() : ((boolean) number.subSequence(0,3).equals("106") ? 4 : 6)))) };
             Cursor cursor = db.query(TABLE_NAME, null, NUMBER_INDEX,
               numm, null, null, null);
             if (cursor != null && cursor.moveToFirst()) {
