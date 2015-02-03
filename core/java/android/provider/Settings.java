@@ -7436,6 +7436,12 @@ public final class Settings {
         public static final String NIGHT_BRIGHTNESS = "night_brightness";
 
         /**
+         * changes smarter sleep.
+         * int 0-on or >0 changes sleep mode.
+         */
+        public static final String SMARTER_SLEEP = "smarter_sleep";
+
+        /**
          * Whether to sound when charger power is connected/disconnected
          * @hide
          */
