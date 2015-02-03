@@ -3216,20 +3216,6 @@ public final class Settings {
         public static final String CARRIER_SIZE = "carrier_size";
 
         /**
-         * smarter brightness.
-         * int (0: off or 1: on).
-         */
-        public static final String SMARTER_BRIGHTNESS = "smarter_brightness";
-
-        /**
-         * changes brightness.
-         */
-        public static final String SMALL_BRIGHTNESS = "small_brightness";
-        public static final String MORNING_BRIGHTNESS = "morning_brightness";
-        public static final String NOON_BRIGHTNESS = "noon_brightness";
-        public static final String NIGHT_BRIGHTNESS = "night_brightness";
-
-        /**
          * use second date.
          */
         public static final String CLOCK_USE_SECOND = "clock_second";
@@ -7434,6 +7420,20 @@ public final class Settings {
          * @hide
          */
         public static final String LOW_POWER_MODE_TRIGGER_LEVEL = "low_power_trigger_level";
+
+        /**
+         * smarter brightness.
+         * int (0: off or 1: on).
+         */
+        public static final String SMARTER_BRIGHTNESS = "smarter_brightness";
+
+        /**
+         * changes brightness.
+         */
+        public static final String SMALL_BRIGHTNESS = "small_brightness";
+        public static final String MORNING_BRIGHTNESS = "morning_brightness";
+        public static final String NOON_BRIGHTNESS = "noon_brightness";
+        public static final String NIGHT_BRIGHTNESS = "night_brightness";
 
         /**
          * Whether to sound when charger power is connected/disconnected

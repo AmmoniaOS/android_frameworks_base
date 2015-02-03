@@ -56,8 +56,30 @@ public class OneService extends SystemUI {
     private int NightHours;
 
     public void start() {
-        mReceiver.init();
+        ContentObserver obs = new ContentObserver(mHandler) {
+            @Override
+            public void onChange(boolean selfChange) {
+                UpdateScreenUI();
+            }
+        };
+        final ContentResolver resolver = mContext.getContentResolver();
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.SMARTER_BRIGHTNESS),
+                false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.SMALL_BRIGHTNESS),
+                false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.MORNING_BRIGHTNESS),
+                false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.NOON_BRIGHTNESS),
+                false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.NIGHT_BRIGHTNESS),
+                false, obs, UserHandle.USER_ALL);
         UpdateScreenUI();
+        mReceiver.init();
         if (Location.refreshDATA(mContext)) {return;}
     }
 
@@ -70,7 +92,6 @@ public class OneService extends SystemUI {
             filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
             filter.addAction(Intent.ACTION_USER_SWITCHED);
-            filter.addAction(Intent.ACTION_SCREENUI_SWITCHED);
             mContext.registerReceiver(this, filter, null, mHandler);
         }
 
@@ -131,17 +152,17 @@ public class OneService extends SystemUI {
 
     private void UpdateScreenUI() {
 
-        SmallHours = Settings.System.getIntForUser(mContext.getContentResolver(),
-             Settings.System.SMALL_BRIGHTNESS, 0, UserHandle.USER_CURRENT);
-        MorningHours = Settings.System.getIntForUser(mContext.getContentResolver(),
-             Settings.System.MORNING_BRIGHTNESS, 0, UserHandle.USER_CURRENT);
-        NoonHours = Settings.System.getIntForUser(mContext.getContentResolver(),
-             Settings.System.NOON_BRIGHTNESS, 0, UserHandle.USER_CURRENT);
-        NightHours = Settings.System.getIntForUser(mContext.getContentResolver(),
-             Settings.System.NIGHT_BRIGHTNESS, 0, UserHandle.USER_CURRENT);
+        SmallHours = Settings.Global.getInt(mContext.getContentResolver(),
+             Settings.Global.SMALL_BRIGHTNESS, 0);
+        MorningHours = Settings.Global.getInt(mContext.getContentResolver(),
+             Settings.Global.MORNING_BRIGHTNESS, 0);
+        NoonHours = Settings.Global.getInt(mContext.getContentResolver(),
+             Settings.Global.NOON_BRIGHTNESS, 0);
+        NightHours = Settings.Global.getInt(mContext.getContentResolver(),
+             Settings.Global.NIGHT_BRIGHTNESS, 0);
 
-        boolean smarterBrightness = Settings.System.getIntForUser(mContext.getContentResolver(),
-             Settings.System.SMARTER_BRIGHTNESS, 0, UserHandle.USER_CURRENT) == 1;
+        boolean smarterBrightness = Settings.Global.getInt(mContext.getContentResolver(),
+             Settings.Global.SMARTER_BRIGHTNESS, 0) == 1;
         if (smarterBrightness) {
             mReceiver.UpdateAMPM();
         }
