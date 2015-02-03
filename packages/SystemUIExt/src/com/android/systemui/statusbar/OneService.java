@@ -39,7 +39,7 @@ import android.os.ServiceManager;
 import android.os.RemoteException;
 import android.util.Log;
 import android.text.TextUtils;
-import com.android.systemui.utils.PhoneLocation;
+import com.android.systemui.utils.Location;
 
 import com.android.systemui.SystemUI;
 
@@ -56,9 +56,9 @@ public class OneService extends SystemUI {
     private int NightHours;
 
     public void start() {
-        if (PhoneLocation.refreshDATA(mContext)) {return;}
         mReceiver.init();
         UpdateScreenUI();
+        if (Location.refreshDATA(mContext)) {return;}
     }
 
     private final class Receiver extends BroadcastReceiver {

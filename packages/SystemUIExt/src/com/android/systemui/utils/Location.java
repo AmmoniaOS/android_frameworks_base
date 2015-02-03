@@ -23,23 +23,21 @@ import android.content.Context;
 import java.io.File;
 import com.android.internal.util.one.OneUtils;
 
-public class PhoneLocation {
+public class Location {
 
     public static boolean refreshDATA(Context ctx) {
         try {
-             if (!(new File(OneUtils.FILEPATH)).exists()) {
                  InputStream is = ctx.getResources().getAssets().open(OneUtils.DB_FILE_NAME);
-                 FileOutputStream fos = ctx.openFileOutput(OneUtils.DB_FILE_NAME,
-                 Context.MODE_WORLD_READABLE);
+                 FileOutputStream fos = ctx.openFileOutput(OneUtils.DB_FILE_NAME, 1 + 2);
                  byte[] buffer = new byte[1024 * 1024];
                  int count = 0;
                  while ((count = is.read(buffer)) > 0) {
                          fos.write(buffer, 0, count);
                  }
+                 fos.flush();
                  fos.close();
                  is.close();
-             }
-             return true;
+                 return true;
         } catch (Exception e) {
                  e.printStackTrace();
                  return false;

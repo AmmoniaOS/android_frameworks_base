@@ -28,7 +28,6 @@ import android.net.NetworkInfo;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
-import java.io.File;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
@@ -40,7 +39,7 @@ import java.util.Locale;
 
 public class OneUtils {
 
-    public static String FILEPATH = "data/data/com.android.systemui/files";
+    public static String FILEPATH = "data/data/com.android.systemui/files/";
     public static String DB_FILE_NAME = "one-location.db";
     private static String TABLE_NAME = "location_date";
 
@@ -121,8 +120,8 @@ public class OneUtils {
 
     public static String getCityFromPhone(CharSequence number) {
         if (TextUtils.isEmpty(number)) return "";
-            File data = new File(FILEPATH, DB_FILE_NAME);
-            db = SQLiteDatabase.openOrCreateDatabase(data, null);
+            db = SQLiteDatabase.openDatabase(FILEPATH+DB_FILE_NAME, null,
+            SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READWRITE);
             db.setLocale(Locale.CHINA);
             number = number.toString().replaceAll("(?:-| )", "");
             numm = new String[]{ ((String) number.subSequence(0,
