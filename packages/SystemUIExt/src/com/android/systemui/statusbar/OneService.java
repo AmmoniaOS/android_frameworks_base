@@ -177,11 +177,7 @@ public class OneService extends SystemUI {
         mSmarterSleep = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.SMARTER_SLEEP, 0);
 
-        boolean smarterBrightness = Settings.Global.getInt(mContext.getContentResolver(),
-             Settings.Global.SMARTER_BRIGHTNESS, 0) == 1;
-        if (smarterBrightness) {
-            mReceiver.UpdateAMPM();
-        }
+        mReceiver.UpdateAMPM();
     }
 }
 
