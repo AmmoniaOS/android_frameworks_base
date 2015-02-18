@@ -37,10 +37,14 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.os.IPowerManager;
 import android.os.PowerManager;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.os.ServiceManager;
 import android.os.RemoteException;
 import android.util.Log;
 import android.text.TextUtils;
+import android.graphics.Color;
 import com.android.systemui.utils.Location;
 
 import com.android.systemui.SystemUI;
@@ -50,22 +54,33 @@ public class OneService extends SystemUI {
     static final String TAG = "OneService";
 
     private final Handler mHandler = new Handler();
-    private final Receiver mReceiver = new Receiver();
+    private final Receiver m = new Receiver();
 
     private int SmallHours;
     private int MorningHours;
     private int NoonHours;
     private int NightHours;
 
+    private int mNightmode;
+
     private int mSmarterSleep;
     private boolean mSmarterAirplane;
 
     private AudioManager audioMgr;
     private ConnectivityManager mgr;
+    private LayoutParams mParams;
+    private PowerManager pm;
+    private IPowerManager mPower;
+    private View view;
+    private WindowManager localWindowManager;
 
     public void start() {
         audioMgr = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mgr = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        localWindowManager = (WindowManager) mContext.getSystemService("window");
+        mParams = new WindowManager.LayoutParams();
+        pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+        mPower = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
         ContentObserver obs = new ContentObserver(mHandler) {
             @Override
             public void onChange(boolean selfChange) {
@@ -94,8 +109,11 @@ public class OneService extends SystemUI {
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.NIGHT_BRIGHTNESS),
                 false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.NIGHT_COLOR_MODE),
+                false, obs, UserHandle.USER_ALL);
         UpdateSettings();
-        mReceiver.init();
+        m.init();
         if (Location.refreshDATA(mContext)) {return;}
     }
 
@@ -119,32 +137,65 @@ public class OneService extends SystemUI {
             if (ampm == Calendar.AM) {
                   if (hours < 6) {
                       mgr.setAirplaneMode(mSmarterAirplane);
-                      audioMgr.setRingerMode((mSmarterSleep == 1 ? 0 : 2));
-                      UpdateBrightness((SmallHours == 0 ? 2 : SmallHours));
+                      audioMgr.setRingerMode(mSmarterSleep == 1 ? 0 : 2);
+                      UpdateBrightness(SmallHours == 0 ? 2 : SmallHours);
                   } else if (hours >= 6 && hours < 12) {
-                      mgr.setAirplaneMode(false);
-                      audioMgr.setRingerMode((mSmarterSleep == 2 ? 0 : 2));
-                      UpdateBrightness((MorningHours == 0 ? 120 : MorningHours));
+                      mgr.setAirplaneMode(mSmarterAirplane ? false : true);
+                      audioMgr.setRingerMode(mSmarterSleep == 2 ? 0 : 2);
+                      UpdateBrightness(MorningHours == 0 ? 120 : MorningHours);
                   } else {
                       UpdateBrightness(2);
                   }
             } else {
                 if (hours < 6) {
-                    audioMgr.setRingerMode((mSmarterSleep == 3 ? 0 : 2));
-                    UpdateBrightness((NoonHours == 0 ? 120 : NoonHours));
+                    audioMgr.setRingerMode(mSmarterSleep == 3 ? 0 : 2);
+                    UpdateBrightness(NoonHours == 0 ? 120 : NoonHours);
                 } else if (hours >= 6 && hours < 12) {
-                    audioMgr.setRingerMode((mSmarterSleep == 4 ? 0 : 2));
-                    UpdateBrightness((NightHours == 0 ? 50 : NightHours));
+                    audioMgr.setRingerMode(mSmarterSleep == 4 ? 0 : 2);
+                    UpdateBrightness(NightHours == 0 ? 50 : NightHours);
                 } else {
                     UpdateBrightness(2);
                 }
            }
        }
 
+        public void ScreenviewInit() {
+            mParams.type = 2006;
+            mParams.flags = 280;
+            mParams.format = 1;
+            mParams.gravity = 51;
+            mParams.x = 0;
+            mParams.y = 0;
+            mParams.width = -1;
+            mParams.height = -1;
+            view = new View(mContext);
+            view.setFocusable(false);
+            view.setFocusableInTouchMode(false);
+        }
+
+        public void UpdateUI(int v) {
+            ScreenviewInit();
+            switch(v) {
+              case 0:
+                view.setBackgroundColor(Color.argb(0, 224, 224, 240));
+              break;
+              case 1:
+                view.setBackgroundColor(Color.argb(100, 255, 0, 0));
+              break;
+              case 2:
+                view.setBackgroundColor(Color.argb(150, 0, 0, 0));
+              break;
+              case 3:
+                view.setBackgroundColor(Color.argb(80, 255, 255, 0));
+              break;
+              case 4:
+                view.setBackgroundColor(Color.argb(255, 255, 255, 0));
+              break;
+            localWindowManager.addView(view, mParams);
+        }
+
        private void UpdateBrightness(int value) {
            try {
-              PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-              IPowerManager mPower = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
               int mMinimumBacklight = pm.getMinimumScreenBrightnessSetting();
               final int val = value + mMinimumBacklight;
               mPower.setTemporaryScreenBrightnessSettingOverride(val);
@@ -181,12 +232,16 @@ public class OneService extends SystemUI {
         NightHours = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.NIGHT_BRIGHTNESS, 0);
 
+        mNightmode = Settings.Global.getInt(mContext.getContentResolver(),
+             Settings.Global.NIGHT_COLOR_MODE, 0);
+
         mSmarterSleep = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.SMARTER_SLEEP, 0);
         mSmarterAirplane = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.SMARTER_AIRPLANE, 0) == 1;
 
-        mReceiver.UpdateAMPM();
+        m.UpdateAMPM();
+        m.UpdateUI(mNightmode != null ? mNightmode : 0);
     }
 
 }

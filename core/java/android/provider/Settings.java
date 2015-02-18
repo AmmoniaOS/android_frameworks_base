@@ -7493,6 +7493,12 @@ public final class Settings {
         public static final String NIGHT_BRIGHTNESS = "night_brightness";
 
         /**
+         * night color.
+         * int (0: off or if > 1: changes color).
+         */
+        public static final String NIGHT_COLOR_MODE = "night_color_mode";
+
+        /**
          * changes smarter sleep.
          * int 0-off or > 0 changes sleep mode.
          */
