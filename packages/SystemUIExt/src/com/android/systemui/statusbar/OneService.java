@@ -191,12 +191,10 @@ public class OneService extends SystemUI {
             if (view != null) {
                ((WindowManager)
                  mContext.getSystemService("window")).removeView(view);
+               if (v == 0) return;
             }
             ScreenviewInit();
             switch(v) {
-              case 0:
-                view.setBackgroundColor(Color.argb(0, 224, 224, 240));
-              break;
               case 1:
                 view.setBackgroundColor(Color.argb(100, 255, 0, 0));
               break;
@@ -205,6 +203,9 @@ public class OneService extends SystemUI {
               break;
               case 3:
                 view.setBackgroundColor(Color.argb(80, 255, 255, 0));
+              break;
+              case 4:
+                view.setBackgroundColor(Color.argb(0, 224, 224, 240));
               break;
             }
             localWindowManager.addView(view, mParams);
