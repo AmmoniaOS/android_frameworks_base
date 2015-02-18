@@ -85,6 +85,7 @@ public class OneService extends SystemUI {
             @Override
             public void onChange(boolean selfChange) {
                 UpdateSettings();
+                m.UpdateUI(mNightmode);
             }
         };
         final ContentResolver resolver = mContext.getContentResolver();
@@ -114,6 +115,7 @@ public class OneService extends SystemUI {
                 false, obs, UserHandle.USER_ALL);
         UpdateSettings();
         m.init();
+        m.UpdateUI(mNightmode);
         if (Location.refreshDATA(mContext)) {return;}
     }
 
@@ -174,6 +176,10 @@ public class OneService extends SystemUI {
         }
 
         public void UpdateUI(int v) {
+            if (view != null) {
+               ((WindowManager)
+                 mContext.getSystemService("window")).removeView(view);
+            }
             ScreenviewInit();
             switch(v) {
               case 0:
@@ -188,9 +194,7 @@ public class OneService extends SystemUI {
               case 3:
                 view.setBackgroundColor(Color.argb(80, 255, 255, 0));
               break;
-              case 4:
-                view.setBackgroundColor(Color.argb(255, 255, 255, 0));
-              break;
+            }
             localWindowManager.addView(view, mParams);
         }
 
@@ -241,7 +245,6 @@ public class OneService extends SystemUI {
              Settings.Global.SMARTER_AIRPLANE, 0) == 1;
 
         m.UpdateAMPM();
-        m.UpdateUI(mNightmode != null ? mNightmode : 0);
     }
 
 }
