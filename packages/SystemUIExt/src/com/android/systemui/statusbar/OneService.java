@@ -81,6 +81,7 @@ public class OneService extends SystemUI {
         mParams = new WindowManager.LayoutParams();
         pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mPower = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
+
         ContentObserver obs = new ContentObserver(mHandler) {
             @Override
             public void onChange(boolean selfChange) {
@@ -113,6 +114,7 @@ public class OneService extends SystemUI {
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.NIGHT_COLOR_MODE),
                 false, obs, UserHandle.USER_ALL);
+
         UpdateSettings();
         m.init();
         m.UpdateUI(mNightmode);
@@ -140,8 +142,8 @@ public class OneService extends SystemUI {
                   if (hours < 6) {
                       if (mSmarterAirplane ||
                           mSmarterSleep != 0) {
-                      mgr.setAirplaneMode(mSmarterAirplane);
-                      audioMgr.setRingerMode(mSmarterSleep == 1 ? 0 : 2);
+                          mgr.setAirplaneMode(mSmarterAirplane);
+                          audioMgr.setRingerMode(mSmarterSleep == 1 ? 0 : 2);
                       }
                       UpdateBrightness(SmallHours == 0 ? 2 : SmallHours);
                   } else if (hours >= 6 && hours < 12) {
