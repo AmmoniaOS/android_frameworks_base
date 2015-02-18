@@ -138,22 +138,32 @@ public class OneService extends SystemUI {
             int ampm = cd.get(Calendar.AM_PM);
             if (ampm == Calendar.AM) {
                   if (hours < 6) {
+                      if (mSmarterAirplane ||
+                          mSmarterSleep != 0) {
                       mgr.setAirplaneMode(mSmarterAirplane);
                       audioMgr.setRingerMode(mSmarterSleep == 1 ? 0 : 2);
+                      }
                       UpdateBrightness(SmallHours == 0 ? 2 : SmallHours);
                   } else if (hours >= 6 && hours < 12) {
-                      mgr.setAirplaneMode(mSmarterAirplane ? false : true);
-                      audioMgr.setRingerMode(mSmarterSleep == 2 ? 0 : 2);
+                      if (mSmarterAirplane ||
+                          mSmarterSleep != 0) {
+                          mgr.setAirplaneMode(mSmarterAirplane ? false : true);
+                          audioMgr.setRingerMode(mSmarterSleep == 2 ? 0 : 2);
+                      }
                       UpdateBrightness(MorningHours == 0 ? 120 : MorningHours);
                   } else {
                       UpdateBrightness(2);
                   }
             } else {
                 if (hours < 6) {
-                    audioMgr.setRingerMode(mSmarterSleep == 3 ? 0 : 2);
+                      if (mSmarterSleep != 0) {
+                          audioMgr.setRingerMode(mSmarterSleep == 3 ? 0 : 2);
+                      }
                     UpdateBrightness(NoonHours == 0 ? 120 : NoonHours);
                 } else if (hours >= 6 && hours < 12) {
-                    audioMgr.setRingerMode(mSmarterSleep == 4 ? 0 : 2);
+                      if (mSmarterSleep != 0) {
+                          audioMgr.setRingerMode(mSmarterSleep == 4 ? 0 : 2);
+                      }
                     UpdateBrightness(NightHours == 0 ? 50 : NightHours);
                 } else {
                     UpdateBrightness(2);
