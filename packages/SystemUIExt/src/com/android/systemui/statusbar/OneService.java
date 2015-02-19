@@ -45,7 +45,6 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.text.TextUtils;
 import android.graphics.Color;
-import com.android.systemui.utils.Location;
 
 import com.android.systemui.SystemUI;
 
@@ -118,7 +117,6 @@ public class OneService extends SystemUI {
         UpdateSettings();
         m.init();
         m.UpdateUI(mNightmode);
-        if (Location.refreshDATA(mContext)) {return;}
     }
 
     private final class Receiver extends BroadcastReceiver {
@@ -173,7 +171,7 @@ public class OneService extends SystemUI {
            }
        }
 
-        public void ScreenviewInit() {
+        public void ViewInit() {
             mParams.type = 2006;
             mParams.flags = 280;
             mParams.format = 1;
@@ -187,13 +185,16 @@ public class OneService extends SystemUI {
             view.setFocusableInTouchMode(false);
         }
 
-        public void UpdateUI(int v) {
+        public void RemoveView() {
             if (view != null) {
                ((WindowManager)
                  mContext.getSystemService("window")).removeView(view);
-               if (v == 0) return;
             }
-            ScreenviewInit();
+        }
+
+        public void UpdateUI(int v) {
+            RemoveView();
+            ViewInit();
             switch(v) {
               case 1:
                 view.setBackgroundColor(Color.argb(100, 255, 0, 0));
@@ -209,6 +210,9 @@ public class OneService extends SystemUI {
               break;
             }
             localWindowManager.addView(view, mParams);
+            if (v == 0) {
+                RemoveView();
+            }
         }
 
        private void UpdateBrightness(int value) {
@@ -261,4 +265,3 @@ public class OneService extends SystemUI {
     }
 
 }
-

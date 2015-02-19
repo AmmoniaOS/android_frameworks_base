@@ -211,6 +211,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libnativehelper \
 	liblog \
 	libcutils \
+        libone-phoneloc-jni \
 	libutils \
 	libbinder \
 	libnetutils \

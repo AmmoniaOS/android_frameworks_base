@@ -27,9 +27,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import java.text.DecimalFormat;
-import java.util.Locale;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import java.util.Locale;
 
@@ -38,20 +35,6 @@ import java.util.Locale;
 */
 
 public class OneUtils {
-
-    public static String FILEPATH = "data/data/com.android.systemui/files/";
-    public static String DB_FILE_NAME = "one-location.db";
-    private static String TABLE_NAME = "location_date";
-
-    private static String location;
-    private static String[] numm;
-
-    private static String NUMBER_INDEX = "number=?";
-
-    private static int LOCATION = 2;
-    private static int CITY = 3;
-
-    private static SQLiteDatabase db = null;
 
     public static boolean isSupportLanguage(boolean excludeTW) {
         Configuration configuration = Resources.getSystem().getConfiguration();
@@ -116,25 +99,6 @@ public class OneUtils {
             fileSizeString = df.format((double) size / 1073741824) + "GB";
         }
         return fileSizeString;
-    }
-
-    public static String getCityFromPhone(CharSequence number) {
-        if (TextUtils.isEmpty(number)) return "";
-            db = SQLiteDatabase.openDatabase(FILEPATH+DB_FILE_NAME, null,
-            SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READWRITE);
-            db.setLocale(Locale.CHINA);
-            number = number.toString().replaceAll("(?:-| )", "");
-            numm = new String[]{ ((String) number.subSequence(0,
-            ((String) number).startsWith("0",0) ? 3 : (number.length() < 6 ?
-              number.length() : ((boolean) number.subSequence(0,3).equals("106") ? 4 : 6)))) };
-            Cursor cursor = db.query(TABLE_NAME, null, NUMBER_INDEX,
-              numm, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                location = cursor.getString(LOCATION) + cursor.getString(CITY);
-            } else {
-                location = "未知号码";
-            }
-        return (TextUtils.isEmpty(location) ? "" : location);
     }
 
 }

@@ -77,7 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // database gets upgraded properly. At a minimum, please confirm that 'upgradeVersion'
     // is properly propagated through your change.  Not doing so will result in a loss of user
     // settings.
-    private static final int DATABASE_VERSION = 121;
+    private static final int DATABASE_VERSION = 122;
 
     private Context mContext;
     private int mUserHandle;
@@ -1932,6 +1932,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             upgradeVersion = 121;
         }
 
+        if (upgradeVersion < 122) {
+            db.beginTransaction();
+            SQLiteStatement stmt = null;
+            try {
+                stmt = db.compileStatement("INSERT OR IGNORE INTO secure(name,value)"
+                        + " VALUES(?,?);");
+                loadBooleanSetting(stmt, Secure.ADVANCED_MODE,
+                        R.bool.def_advanced_mode);
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+                if (stmt != null) stmt.close();
+            }
+            upgradeVersion = 122;
+        }
+
         // *** Remember to update DATABASE_VERSION above!
 
         if (upgradeVersion != currentVersion) {
@@ -2577,6 +2593,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadStringSetting(stmt, Settings.Secure.DEFAULT_INPUT_METHOD,
                     R.string.def_default_input_method);
+
+            loadBooleanSetting(stmt, Settings.Secure.ADVANCED_MODE,
+                    R.bool.def_advanced_mode);
 
             loadDefaultThemeSettings(stmt);
             loadProtectedSmsSetting(stmt);
