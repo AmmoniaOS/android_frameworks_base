@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 The Android One Source Project
+ * Copyright (C) 2015 The OneUI Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,6 @@ public class OneService extends SystemUI {
             @Override
             public void onChange(boolean selfChange) {
                 UpdateSettings();
-                m.UpdateUI(mNightmode);
             }
         };
         final ContentResolver resolver = mContext.getContentResolver();
@@ -116,7 +115,6 @@ public class OneService extends SystemUI {
 
         UpdateSettings();
         m.init();
-        m.UpdateUI(mNightmode);
     }
 
     private final class Receiver extends BroadcastReceiver {
@@ -185,15 +183,16 @@ public class OneService extends SystemUI {
             view.setFocusableInTouchMode(false);
         }
 
-        public void RemoveView() {
+        public void RemoveView(int v) {
             if (view != null) {
-               ((WindowManager)
-                 mContext.getSystemService("window")).removeView(view);
+                localWindowManager.removeView(view);
+                view = null;
             }
         }
 
         public void UpdateUI(int v) {
-            RemoveView();
+            RemoveView(v);
+            if (v == 0) return;
             ViewInit();
             switch(v) {
               case 1:
@@ -210,9 +209,6 @@ public class OneService extends SystemUI {
               break;
             }
             localWindowManager.addView(view, mParams);
-            if (v == 0) {
-                RemoveView();
-            }
         }
 
        private void UpdateBrightness(int value) {
@@ -236,14 +232,13 @@ public class OneService extends SystemUI {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_TIME_TICK)) {
-                UpdateSettings();
+                UpdateAMPM();
             }
-            UpdateSettings();
+            UpdateAMPM();
         }
     };
 
     private void UpdateSettings() {
-
         SmallHours = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.SMALL_BRIGHTNESS, 0);
         MorningHours = Settings.Global.getInt(mContext.getContentResolver(),
@@ -252,7 +247,7 @@ public class OneService extends SystemUI {
              Settings.Global.NOON_BRIGHTNESS, 0);
         NightHours = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.NIGHT_BRIGHTNESS, 0);
-
+             
         mNightmode = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.NIGHT_COLOR_MODE, 0);
 
@@ -261,7 +256,9 @@ public class OneService extends SystemUI {
         mSmarterAirplane = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.SMARTER_AIRPLANE, 0) == 1;
 
+        m.UpdateUI(mNightmode);
         m.UpdateAMPM();
     }
 
 }
+
