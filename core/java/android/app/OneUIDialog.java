@@ -39,6 +39,9 @@ import com.android.internal.R;
  * {@hide}
  */
 public class OneUIDialog extends Dialog {
+
+    private int DURATION_TIMEOUT = 12000;
+
     private TextView mMessage;
     private LinearLayout mColorLayout;
 
@@ -63,7 +66,7 @@ public class OneUIDialog extends Dialog {
         int currHourColor = OneUtils.getCurrentHourColor();
         ObjectAnimator animator = ObjectAnimator.ofInt(mColorLayout,
                     "backgroundColor", mDefaultColor, currHourColor);
-        animator.setDuration(3000);
+        animator.setDuration(DURATION_TIMEOUT);
         animator.setEvaluator(new ArgbEvaluator());
         animator.start();
     }

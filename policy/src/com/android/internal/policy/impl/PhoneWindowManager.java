@@ -6205,6 +6205,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     @Override
     public void showBootMessage(final CharSequence msg, final boolean always) {
 
+        Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0);
+        Settings.Secure.putInt(mContext.getContentResolver(), Settings.Secure.USER_SETUP_COMPLETE, 0);
+
         final CharSequence cte = mContext.getResources().getString(R.string.android_installing_apk_complete);
 
         mHandler.post(new Runnable() {
@@ -6224,7 +6227,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mBootMsgDialog.show();
                 }
                 mBootMsgDialog.setMessage(mContext.getResources().getString(
-                    com.android.internal.R.string.android_installing_apk).equals(msg) ? cte :
+                    com.android.internal.R.string.android_upgrading_starting_apps).equals(msg) ? cte :
                     (currentPackageName != null ? msg + "\n" + currentPackageName : msg));
             }
         });

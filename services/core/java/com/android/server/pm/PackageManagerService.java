@@ -4672,16 +4672,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                                 + "; running immediately");
                         if (!isFirstBoot()) {
                             try {
-                                // give the packagename to the PhoneWindowManager
-                                ApplicationInfo ai;
-                                try {
-                                    ai = mContext.getPackageManager().getApplicationInfo(pkg.packageName, 0);
-                                } catch (Exception e) {
-                                    ai = null;
-                                }
-                                mPolicy.setPackageName((String) (ai != null ?
-                                    mContext.getPackageManager().getApplicationLabel(ai) : pkg.packageName));
-
                                 ActivityManagerNative.getDefault().showBootMessage(
                                         mContext.getResources().getString(
                                                 R.string.android_upgrading_fstrim), true);
@@ -4856,6 +4846,16 @@ public class PackageManagerService extends IPackageManager.Stub {
                 R.string.android_installing_apk : R.string.android_upgrading_apk;
 
         try {
+            // give the packagename to the PhoneWindowManager
+            ApplicationInfo ai;
+            try {
+                ai = mContext.getPackageManager().getApplicationInfo(pkg.packageName, 0);
+            } catch (Exception e) {
+                ai = null;
+            }
+            mPolicy.setPackageName((String) (ai != null ?
+                mContext.getPackageManager().getApplicationLabel(ai) : pkg.packageName));
+
             ActivityManagerNative.getDefault().showBootMessage(
                     mContext.getResources().getString(messageRes,
                             curr, total), true);
