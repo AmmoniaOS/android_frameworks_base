@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 The Android One
+ * Copyright (C) 2015 The OneUI Open OpenSource Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,12 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.os.SystemProperties;
 import android.net.NetworkInfo;
+import java.util.Calendar;
 
 import java.text.DecimalFormat;
+import android.graphics.Color;
 import android.text.TextUtils;
 import java.util.Locale;
 
@@ -35,6 +38,10 @@ import java.util.Locale;
 */
 
 public class OneUtils {
+    public static final String[] BACKGROUND_SPECTRUM = { "#212121", "#27232e", "#2d253a",
+            "#332847", "#382a53", "#3e2c5f", "#442e6c", "#393a7a", "#2e4687", "#235395", "#185fa2",
+            "#0d6baf", "#0277bd", "#0d6cb1", "#1861a6", "#23569b", "#2d4a8f", "#383f84", "#433478",
+            "#3d3169", "#382e5b", "#322b4d", "#2c273e", "#272430" };
 
     public static boolean isSupportLanguage(boolean excludeTW) {
         Configuration configuration = Resources.getSystem().getConfiguration();
@@ -99,6 +106,16 @@ public class OneUtils {
             fileSizeString = df.format((double) size / 1073741824) + "GB";
         }
         return fileSizeString;
+    }
+
+    public static int getCurrentHourColor() {
+        final int hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        return Color.parseColor(BACKGROUND_SPECTRUM[hourOfDay]);
+    }
+
+    public static String getOneUIVersion() {
+        String OneUIVersion = SystemProperties.get("ro.one.version");
+        return OneUIVersion;
     }
 
 }
