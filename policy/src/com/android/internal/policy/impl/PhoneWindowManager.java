@@ -6205,9 +6205,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     @Override
     public void showBootMessage(final CharSequence msg, final boolean always) {
 
-        Settings.Global.putInt(mContext.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0);
-        Settings.Secure.putInt(mContext.getContentResolver(), Settings.Secure.USER_SETUP_COMPLETE, 0);
-
         final CharSequence cte = mContext.getResources().getString(R.string.android_installing_apk_complete);
 
         mHandler.post(new Runnable() {
