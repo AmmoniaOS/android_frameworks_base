@@ -6224,7 +6224,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mBootMsgDialog.show();
                 }
                 mBootMsgDialog.setMessage(mContext.getResources().getString(
-                    com.android.internal.R.string.android_upgrading_starting_apps).equals(msg) ? cte :
+                    com.android.internal.R.string.android_upgrading_starting_apps).equals(msg)
+                    || mContext.getResources().getString(
+                    com.android.internal.R.string.android_upgrading_complete).equals(msg) ? cte :
                     (currentPackageName != null ? msg + "\n" + currentPackageName : msg));
             }
         });
