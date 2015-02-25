@@ -589,7 +589,6 @@ public final class PowerManager {
     public void userActivity(long when, int event, int flags) {
         try {
             mService.userActivity(when, event, flags);
-            if (Powerstate()) setPowerSaveMode(false);
         } catch (RemoteException e) {
         }
     }
@@ -641,7 +640,6 @@ public final class PowerManager {
     public void goToSleep(long time, int reason, int flags) {
         try {
             mService.goToSleep(time, reason, flags);
-            if (Powerstate()) setPowerSaveMode(true);
         } catch (RemoteException e) {
         }
     }
@@ -1270,10 +1268,5 @@ public final class PowerManager {
     public int getDefaultKeyboardBrightness() {
         return mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_keyboardBrightnessSettingDefault);
-    }
-    
-    public boolean Powerstate() {
-        return Settings.System.getInt(
-                mContext.getContentResolver(), Settings.System.POWER_SAVE_SETTINGS, 0) == 2;
     }
 }

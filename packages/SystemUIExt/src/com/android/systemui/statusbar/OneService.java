@@ -117,6 +117,9 @@ public class OneService extends SystemUI {
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.NIGHT_COLOR_MODE),
                 false, obs, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.Global.getUriFor(
+                Settings.Global.POWER_SAVE_SETTINGS),
+                false, obs, UserHandle.USER_ALL);
 
         UpdateAll();
         m.init();
@@ -237,23 +240,27 @@ public class OneService extends SystemUI {
         }
 
         private void updateSaverMode() {
-            if (status ==
+            if (status !=
                 BatteryManager.BATTERY_STATUS_CHARGING) {
-                setSaverMode(false);
+                if (level <= 15 && mState == 3
+                    || mState == 1) {
+                    setSaverMode(true);
+                }
             } else {
-                setSaverMode(true);
-            }
-            if (level <= 15 && mState == 3) {
                 setSaverMode(false);
             }
+            if (mState == 0) {
+                setSaverMode(false);
+            }
+            Log.w(TAG, "Setting PowerSaver mode is: " + getSaverMode());
+        }
+
+        private boolean getSaverMode() {
+             return pm.isPowerSaveMode();
         }
 
         private void setSaverMode(boolean mode) {
-             if (mState != 0) {
-                 pm.setPowerSaveMode(mode);
-             } else {
-                 pm.setPowerSaveMode(false);
-             }
+             pm.setPowerSaveMode(mode);
         }
 
         @Override
@@ -293,8 +300,8 @@ public class OneService extends SystemUI {
         mSmarterAirplane = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.SMARTER_AIRPLANE, 0) == 1;
 
-        mState = Settings.System.getInt(mContext.getContentResolver(),
-             Settings.System.POWER_SAVE_SETTINGS, 0);
+        mState = Settings.Global.getInt(mContext.getContentResolver(),
+             Settings.Global.POWER_SAVE_SETTINGS, 0);
 
         m.UpdateUI(mNightmode);
         m.updateSaverMode();
