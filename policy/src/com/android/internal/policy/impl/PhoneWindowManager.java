@@ -6233,6 +6233,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     @Override
     public void hideBootMessages() {
+        Settings.Global.putInt(mContext.getContentResolver(),
+            Settings.Global.DEVICE_PROVISIONED, 1);
+        Settings.Secure.putInt(mContext.getContentResolver(),
+            Settings.Secure.USER_SETUP_COMPLETE, 1);
         mHandler.sendEmptyMessage(MSG_HIDE_BOOT_MESSAGE);
     }
 
