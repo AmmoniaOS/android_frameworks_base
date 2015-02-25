@@ -18,35 +18,36 @@ package com.android.systemui;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import java.util.Calendar;
-import android.media.AudioManager;
-import android.net.ConnectivityManager;
-
-import com.android.internal.util.one.OneUtils;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.provider.Settings;
 import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.AsyncTask;
 import android.os.UserHandle;
-import android.provider.Settings;
+import android.os.BatteryManager;
 import android.os.IPowerManager;
 import android.os.PowerManager;
+import android.os.ServiceManager;
+import android.os.RemoteException;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.os.ServiceManager;
-import android.os.RemoteException;
-import android.util.Log;
+import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.media.AudioManager;
 import android.text.TextUtils;
 import android.graphics.Color;
 
+import android.util.Log;
+import java.util.Calendar;
+
 import com.android.systemui.SystemUI;
+import com.android.internal.util.one.OneUtils;
 
 public class OneService extends SystemUI {
 
@@ -61,6 +62,10 @@ public class OneService extends SystemUI {
     private int NightHours;
 
     private int mNightmode;
+
+    private int level;
+    private int status;
+    private int mState;
 
     private int mSmarterSleep;
     private boolean mSmarterAirplane;
@@ -84,7 +89,7 @@ public class OneService extends SystemUI {
         ContentObserver obs = new ContentObserver(mHandler) {
             @Override
             public void onChange(boolean selfChange) {
-                UpdateSettings();
+                UpdateAll();
             }
         };
         final ContentResolver resolver = mContext.getContentResolver();
@@ -113,7 +118,7 @@ public class OneService extends SystemUI {
                 Settings.Global.NIGHT_COLOR_MODE),
                 false, obs, UserHandle.USER_ALL);
 
-        UpdateSettings();
+        UpdateAll();
         m.init();
     }
 
@@ -126,6 +131,9 @@ public class OneService extends SystemUI {
             filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
             filter.addAction(Intent.ACTION_USER_SWITCHED);
+            filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            filter.addAction(Intent.ACTION_SCREEN_ON);
             mContext.registerReceiver(this, filter, null, mHandler);
         }
 
@@ -228,17 +236,46 @@ public class OneService extends SystemUI {
            }      
         }
 
+        private void updateSaverMode() {
+            if (status ==
+                BatteryManager.BATTERY_STATUS_CHARGING) {
+                setSaverMode(false);
+            } else {
+                setSaverMode(true);
+            }
+            if (level <= 15 && mState == 3) {
+                setSaverMode(false);
+            }
+        }
+
+        private void setSaverMode(boolean mode) {
+             if (mState != 0) {
+                 pm.setPowerSaveMode(mode);
+             } else {
+                 pm.setPowerSaveMode(false);
+             }
+        }
+
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_TIME_TICK)) {
                 UpdateAMPM();
+            } else if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+                level = intent.getIntExtra("level", 0);
+                status = intent.getIntExtra("status", 0);
+                updateSaverMode();
+            } else if (action.equals(Intent.ACTION_SCREEN_OFF)
+             && mState == 2) {
+                setSaverMode(true);
+            } else if (action.equals(Intent.ACTION_SCREEN_ON)
+             && mState == 2) {
+                setSaverMode(false);
             }
-            UpdateAMPM();
         }
     };
 
-    private void UpdateSettings() {
+    private void UpdateAll() {
         SmallHours = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.SMALL_BRIGHTNESS, 0);
         MorningHours = Settings.Global.getInt(mContext.getContentResolver(),
@@ -256,7 +293,11 @@ public class OneService extends SystemUI {
         mSmarterAirplane = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.SMARTER_AIRPLANE, 0) == 1;
 
+        mState = Settings.System.getInt(mContext.getContentResolver(),
+             Settings.System.POWER_SAVE_SETTINGS, 0);
+
         m.UpdateUI(mNightmode);
+        m.updateSaverMode();
         m.UpdateAMPM();
     }
 

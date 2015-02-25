@@ -346,8 +346,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     int mKeyguardMaxNotificationCount;
     
-    private boolean mPowerSaveState;
-    
     // Status bar carrier
     private boolean mShowStatusBarCarrier;
     
@@ -483,9 +481,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                             Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL,
                             UserHandle.USER_CURRENT);
             mAutomaticBrightness = mode != Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;
-
-            mPowerSaveState = 1 == Settings.System.getInt(resolver,
-                  Settings.System.POWER_SAVE_SETTINGS, 0);
             mShowStatusBarCarrier = Settings.System.getIntForUser(resolver,
                 Settings.System.SHOW_CARRIER, 0, mCurrentUserId) == 1;
             showStatusBarCarrierLabel(mShowStatusBarCarrier);
@@ -498,7 +493,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     resolver, Settings.System.STATUS_BAR_CLOCK, Clock.STYLE_CLOCK_RIGHT,
                     UserHandle.USER_CURRENT);
             updateClockView();
-            setPowerSaveSettings(mPowerSaveState);
 
             // check to see if we need to adjust alpha/visibility
             // this fixes the bug where if User A has left and User B has center and you switch
@@ -3658,11 +3652,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (statusBarCarrierLabel != null) {
             statusBarCarrierLabel.setVisibility(show ? (mShowStatusBarCarrier ? View.VISIBLE : View.GONE) : View.GONE);
         }
-    }
-    
-    public void setPowerSaveSettings(boolean state) {
-        PowerManager mPowerMan = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        mPowerMan.setPowerSaveMode(state);
     }
 
     private BroadcastReceiver mPackageBroadcastReceiver = new BroadcastReceiver() {
