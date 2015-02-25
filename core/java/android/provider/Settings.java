@@ -7549,31 +7549,13 @@ public final class Settings {
         public static final String MORNING_BRIGHTNESS = "morning_brightness";
         public static final String NOON_BRIGHTNESS = "noon_brightness";
         public static final String NIGHT_BRIGHTNESS = "night_brightness";
-
-        /**
-         * night color.
-         * int (0: off or if > 1: changes color).
-         */
-        public static final String NIGHT_COLOR_MODE = "night_color_mode";
-
-        /**
-         * changes smarter sleep.
-         * int 0-off or > 0 changes sleep mode.
-         */
-        public static final String SMARTER_SLEEP = "smarter_sleep";
-
-        /**
-         * changes smarter airplane.
-         * int 0-off or 1-on changes airplane mode.
-         */
-        public static final String SMARTER_AIRPLANE = "smarter_airplane";
         
         /**
-         × New One PowerSave Settings
-         * Settingb Power Save
-         * 0: Off the Power Save
-         * 1: On the Power Save
-         * 2: On the Power Save Off screen
+         * Setting Power Saver
+         * 0: Off the Power Saver
+         * 1: On the Power Saver
+         * 2: On the Power Saver Off screen
+         * 3: low power run
          * @hide
          */
         public static final String POWER_SAVE_SETTINGS = "power_save_settings";

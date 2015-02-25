@@ -34,14 +34,8 @@ import android.os.IPowerManager;
 import android.os.PowerManager;
 import android.os.ServiceManager;
 import android.os.RemoteException;
-import android.view.View;
-import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
-import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.media.AudioManager;
 import android.text.TextUtils;
-import android.graphics.Color;
 
 import android.util.Log;
 import java.util.Calendar;
@@ -61,28 +55,14 @@ public class OneService extends SystemUI {
     private int NoonHours;
     private int NightHours;
 
-    private int mNightmode;
-
     private int level;
     private int status;
     private int mState;
 
-    private int mSmarterSleep;
-    private boolean mSmarterAirplane;
-
-    private AudioManager audioMgr;
-    private ConnectivityManager mgr;
-    private LayoutParams mParams;
     private PowerManager pm;
     private IPowerManager mPower;
-    private View view;
-    private WindowManager localWindowManager;
 
     public void start() {
-        audioMgr = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        mgr = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        localWindowManager = (WindowManager) mContext.getSystemService("window");
-        mParams = new WindowManager.LayoutParams();
         pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mPower = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
 
@@ -97,12 +77,6 @@ public class OneService extends SystemUI {
                 Settings.Global.SMARTER_BRIGHTNESS),
                 false, obs, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.Global.getUriFor(
-                Settings.Global.SMARTER_SLEEP),
-                false, obs, UserHandle.USER_ALL);
-        resolver.registerContentObserver(Settings.Global.getUriFor(
-                Settings.Global.SMARTER_AIRPLANE),
-                false, obs, UserHandle.USER_ALL);
-        resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.SMALL_BRIGHTNESS),
                 false, obs, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.Global.getUriFor(
@@ -113,9 +87,6 @@ public class OneService extends SystemUI {
                 false, obs, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.NIGHT_BRIGHTNESS),
-                false, obs, UserHandle.USER_ALL);
-        resolver.registerContentObserver(Settings.Global.getUriFor(
-                Settings.Global.NIGHT_COLOR_MODE),
                 false, obs, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.POWER_SAVE_SETTINGS),
@@ -147,80 +118,22 @@ public class OneService extends SystemUI {
             int ampm = cd.get(Calendar.AM_PM);
             if (ampm == Calendar.AM) {
                   if (hours < 6) {
-                      if (mSmarterAirplane ||
-                          mSmarterSleep != 0) {
-                          mgr.setAirplaneMode(mSmarterAirplane);
-                          audioMgr.setRingerMode(mSmarterSleep == 1 ? 0 : 2);
-                      }
                       UpdateBrightness(SmallHours == 0 ? 2 : SmallHours);
                   } else if (hours >= 6 && hours < 12) {
-                      if (mSmarterAirplane ||
-                          mSmarterSleep != 0) {
-                          mgr.setAirplaneMode(mSmarterAirplane ? false : true);
-                          audioMgr.setRingerMode(mSmarterSleep == 2 ? 0 : 2);
-                      }
                       UpdateBrightness(MorningHours == 0 ? 120 : MorningHours);
                   } else {
                       UpdateBrightness(2);
                   }
             } else {
                 if (hours < 6) {
-                      if (mSmarterSleep != 0) {
-                          audioMgr.setRingerMode(mSmarterSleep == 3 ? 0 : 2);
-                      }
                     UpdateBrightness(NoonHours == 0 ? 120 : NoonHours);
                 } else if (hours >= 6 && hours < 12) {
-                      if (mSmarterSleep != 0) {
-                          audioMgr.setRingerMode(mSmarterSleep == 4 ? 0 : 2);
-                      }
                     UpdateBrightness(NightHours == 0 ? 50 : NightHours);
                 } else {
                     UpdateBrightness(2);
                 }
            }
        }
-
-        public void ViewInit() {
-            mParams.type = 2006;
-            mParams.flags = 280;
-            mParams.format = 1;
-            mParams.gravity = 51;
-            mParams.x = 0;
-            mParams.y = 0;
-            mParams.width = -1;
-            mParams.height = -1;
-            view = new View(mContext);
-            view.setFocusable(false);
-            view.setFocusableInTouchMode(false);
-        }
-
-        public void RemoveView(int v) {
-            if (view != null) {
-                localWindowManager.removeView(view);
-                view = null;
-            }
-        }
-
-        public void UpdateUI(int v) {
-            RemoveView(v);
-            if (v == 0) return;
-            ViewInit();
-            switch(v) {
-              case 1:
-                view.setBackgroundColor(Color.argb(100, 255, 0, 0));
-              break;
-              case 2:
-                view.setBackgroundColor(Color.argb(150, 0, 0, 0));
-              break;
-              case 3:
-                view.setBackgroundColor(Color.argb(80, 255, 255, 0));
-              break;
-              case 4:
-                view.setBackgroundColor(Color.argb(0, 224, 224, 240));
-              break;
-            }
-            localWindowManager.addView(view, mParams);
-        }
 
        private void UpdateBrightness(int value) {
            try {
@@ -246,10 +159,9 @@ public class OneService extends SystemUI {
                     || mState == 1) {
                     setSaverMode(true);
                 }
-            } else {
+            } else if (mState == 0) {
                 setSaverMode(false);
-            }
-            if (mState == 0) {
+            } else {
                 setSaverMode(false);
             }
             Log.w(TAG, "Setting PowerSaver mode is: " + getSaverMode());
@@ -291,14 +203,6 @@ public class OneService extends SystemUI {
              Settings.Global.NOON_BRIGHTNESS, 0);
         NightHours = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.NIGHT_BRIGHTNESS, 0);
-             
-        mNightmode = Settings.Global.getInt(mContext.getContentResolver(),
-             Settings.Global.NIGHT_COLOR_MODE, 0);
-
-        mSmarterSleep = Settings.Global.getInt(mContext.getContentResolver(),
-             Settings.Global.SMARTER_SLEEP, 0);
-        mSmarterAirplane = Settings.Global.getInt(mContext.getContentResolver(),
-             Settings.Global.SMARTER_AIRPLANE, 0) == 1;
 
         mState = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.POWER_SAVE_SETTINGS, 0);
