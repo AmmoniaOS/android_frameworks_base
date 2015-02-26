@@ -158,9 +158,9 @@ public class OneService extends SystemUI {
                 if (level <= 15 && mState == 3
                     || mState == 1) {
                     setSaverMode(true);
+                } else {
+                    setSaverMode(false);
                 }
-            } else if (mState == 0) {
-                setSaverMode(false);
             } else {
                 setSaverMode(false);
             }
@@ -180,7 +180,7 @@ public class OneService extends SystemUI {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_TIME_TICK)) {
                 UpdateAMPM();
-            } else if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+            } else if (action.equals(Intent.ACTION_BATTERY_CHANGED) && mState != 2) {
                 level = intent.getIntExtra("level", 0);
                 status = intent.getIntExtra("status", 0);
                 updateSaverMode();
