@@ -156,12 +156,18 @@ public class OneService extends SystemUI {
         private void updateSaverMode() {
              if (status == BatteryManager.BATTERY_STATUS_CHARGING || mState == 0) {
                  setSaverMode(false);
+                 return;
              }
-             if (level <= 15 && mState == 3 || mState == 1) {
-                 setSaverMode(true);
-             }
-             if (mState == 2) {
-                 setSaverMode(mDormancy);
+             switch(mState) {
+                case 1:
+                  setSaverMode(true);
+                break;
+                case 2:
+                  setSaverMode(mDormancy);
+                break;
+                case 3:
+                  setSaverMode(level <= 15 ? true : false);
+                break;
              }
              Log.w(TAG, "Setting PowerSaver mode is: " + getSaverMode());
         }
