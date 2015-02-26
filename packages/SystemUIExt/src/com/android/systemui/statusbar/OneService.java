@@ -58,6 +58,7 @@ public class OneService extends SystemUI {
     private int level;
     private int status;
     private int mState;
+    private boolean mDormancy = false;
 
     private PowerManager pm;
     private IPowerManager mPower;
@@ -153,18 +154,16 @@ public class OneService extends SystemUI {
         }
 
         private void updateSaverMode() {
-            if (status !=
-                BatteryManager.BATTERY_STATUS_CHARGING) {
-                if (level <= 15 && mState == 3
-                    || mState == 1) {
-                    setSaverMode(true);
-                } else {
-                    setSaverMode(false);
-                }
-            } else {
-                setSaverMode(false);
-            }
-            Log.w(TAG, "Setting PowerSaver mode is: " + getSaverMode());
+             if (status == BatteryManager.BATTERY_STATUS_CHARGING || mState == 0) {
+                 setSaverMode(false);
+             }
+             if (level <= 15 && mState == 3 || mState == 1) {
+                 setSaverMode(true);
+             }
+             if (mState == 2) {
+                 setSaverMode(mDormancy);
+             }
+             Log.w(TAG, "Setting PowerSaver mode is: " + getSaverMode());
         }
 
         private boolean getSaverMode() {
@@ -180,17 +179,15 @@ public class OneService extends SystemUI {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_TIME_TICK)) {
                 UpdateAMPM();
-            } else if (action.equals(Intent.ACTION_BATTERY_CHANGED) && mState != 2) {
+            } else if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
                 level = intent.getIntExtra("level", 0);
                 status = intent.getIntExtra("status", 0);
-                updateSaverMode();
-            } else if (action.equals(Intent.ACTION_SCREEN_OFF)
-             && mState == 2) {
-                setSaverMode(true);
-            } else if (action.equals(Intent.ACTION_SCREEN_ON)
-             && mState == 2) {
-                setSaverMode(false);
+            } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
+                mDormancy = true;
+            } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
+                mDormancy = false;
             }
+            updateSaverMode();
         }
     };
 
@@ -207,10 +204,8 @@ public class OneService extends SystemUI {
         mState = Settings.Global.getInt(mContext.getContentResolver(),
              Settings.Global.POWER_SAVE_SETTINGS, 0);
 
-        m.UpdateUI(mNightmode);
         m.updateSaverMode();
         m.UpdateAMPM();
     }
 
 }
-
