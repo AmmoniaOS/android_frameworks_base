@@ -100,6 +100,12 @@ public class NetworkTraffic extends TextView {
 
             // If bit/s convert from Bytes to bits
             String symbol = "B/s";
+
+            if (rxData == 0 || txData == 0) {
+                setVisibility(View.GONE);
+            } else {
+                setVisibility(View.VISIBLE);
+            }
  
             // Get information for uplink ready so the line return can be added
             String output = "";
