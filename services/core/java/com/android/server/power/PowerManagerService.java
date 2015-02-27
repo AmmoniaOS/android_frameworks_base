@@ -3287,8 +3287,11 @@ public final class PowerManagerService extends SystemService
             try {
                 boolean changed = setLowPowerModeInternal(mode);
                 if (changed) {
+                    String lastPowerProfile = Settings.Secure.getString(mContext.getContentResolver(),
+                        Settings.Secure.LAST_PERFORMANCE_PROFILE);
                     mPerformanceManager.setPowerProfile(mLowPowerModeEnabled ?
-                            PowerManager.PROFILE_POWER_SAVE : PowerManager.PROFILE_BALANCED);
+                            PowerManager.PROFILE_POWER_SAVE :
+                            (lastPowerProfile != null ? lastPowerProfile : PowerManager.PROFILE_BALANCED));
                 }
                 return changed;
             } finally {

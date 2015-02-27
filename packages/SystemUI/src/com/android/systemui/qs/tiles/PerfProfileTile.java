@@ -142,6 +142,8 @@ public class PerfProfileTile extends QSTile<PerfProfileTile.ProfileState> {
         if (current >= mPerfProfileValues.length) {
             current = 0;
         }
+        Settings.Secure.putString(mContext.getContentResolver(),
+                Settings.Secure.LAST_PERFORMANCE_PROFILE, mPerfProfileValues[current]);
         mPm.setPowerProfile(mPerfProfileValues[current]); // content observer will notify
     }
 

@@ -5851,6 +5851,13 @@ public final class Settings {
         public static final String PERFORMANCE_PROFILE = "performance_profile";
 
         /**
+         * Performance profile
+         * Save last Performance profile Settings
+         * @hide
+         */
+        public static final String LAST_PERFORMANCE_PROFILE = "last_performance_profile";
+
+        /**
          * App-based performance profile selection
          * @hide
          */

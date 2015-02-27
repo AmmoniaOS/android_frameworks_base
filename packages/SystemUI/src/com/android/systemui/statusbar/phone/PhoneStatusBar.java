@@ -346,9 +346,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     int mKeyguardMaxNotificationCount;
     
-    // Status bar carrier
-    private boolean mShowStatusBarCarrier;
-    
     // Status bar Network traffic;
     private NetworkTraffic mNetworkTraffic;
 
@@ -450,9 +447,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_CLOCK), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.SHOW_CARRIER), false, this,
-                    UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVBAR_LEFT_IN_LANDSCAPE), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -478,9 +472,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                             Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL,
                             UserHandle.USER_CURRENT);
             mAutomaticBrightness = mode != Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;
-            mShowStatusBarCarrier = Settings.System.getIntForUser(resolver,
-                Settings.System.SHOW_CARRIER, 0, mCurrentUserId) == 1;
-            showStatusBarCarrierLabel(mShowStatusBarCarrier);
             mBrightnessControl = Settings.System.getIntForUser(
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0,
                     UserHandle.USER_CURRENT) == 1;
@@ -3641,15 +3632,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
         }
     };
-    
-    public void showStatusBarCarrierLabel(boolean show) {
-        if (mStatusBarView == null) return;
-        ContentResolver resolver = mContext.getContentResolver();
-        View statusBarCarrierLabel = mStatusBarView.findViewById(R.id.status_bar_carrier_label);
-        if (statusBarCarrierLabel != null) {
-            statusBarCarrierLabel.setVisibility(show ? (mShowStatusBarCarrier ? View.VISIBLE : View.GONE) : View.GONE);
-        }
-    }
 
     private BroadcastReceiver mPackageBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
