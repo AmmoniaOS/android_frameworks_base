@@ -16,6 +16,7 @@
 
 package com.android.keyguard;
 
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.os.UserHandle;
 import android.provider.Settings;
@@ -166,6 +167,10 @@ public class CarrierText extends TextView {
             if (text.length() > 0) {
                 text.append(" | ");
             }
+
+            if (isScreenLocked() && text.length() > 6) {
+                setMaxEms(6);
+            }
             text.append(carrierText);
         }
         int UpdateSizeStyle = Settings.System.getIntForUser(getContext().getContentResolver(),
@@ -185,6 +190,12 @@ public class CarrierText extends TextView {
             setText(text);
         }
         setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean isScreenLocked() {
+        KeyguardManager mKeyguardManager = (KeyguardManager)
+               mContext.getSystemService(Context.KEYGUARD_SERVICE);
+        return !mKeyguardManager.inKeyguardRestrictedInputMode();
     }
 
     /**
