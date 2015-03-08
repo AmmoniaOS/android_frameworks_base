@@ -3286,16 +3286,28 @@ public final class Settings {
         public static final String SHOW_CARRIER = "show_carrier";
 
         /**
-         * custom carrier label. The value is
+         * custom carrier label.
          * String.
          */
         public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
 
         /**
-         * custom signature label. The value is
+         * custom signature label.
          * String.
          */
         public static final String CUSTOM_SIGNATURE_LABEL = "custom_signature_label";
+        
+        /**
+         * show password dialog.
+         * int (0: Show or 0: Hide).
+         */
+        public static final String SHOW_PASSWORD_DIALOG = "show_password_dialog";
+
+        /**
+         * custom password label.
+         * String.
+         */
+        public static final String CUSTOM_PASSWORD_DIALOG_LABEL = "custom_password_dialog_label";
         
         /**
          * carrier size.

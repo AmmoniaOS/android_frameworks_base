@@ -68,6 +68,7 @@ import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.text.InputType;
+import android.text.Spannable;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -90,6 +91,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -479,7 +481,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         @Override
         public boolean onLongPress() {
-            mWindowManagerFuncs.rebootSafeMode(true);
+            final boolean isPassWord = Settings.System.getInt(
+                       mContext.getContentResolver(), Settings.System.SHOW_PASSWORD_DIALOG, 0) == 1;
+            if (isPassWord) {
+                PassWordDialog(true, true);
+            } else {
+                mWindowManagerFuncs.rebootSafeMode(true);
+            }
             return true;
         }
 
@@ -495,7 +503,21 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         @Override
         public void onPress() {
-                PassWordDialog();
+            final boolean isPassWord = Settings.System.getInt(
+                       mContext.getContentResolver(), Settings.System.SHOW_PASSWORD_DIALOG, 0) == 1;
+            final boolean quickbootEnabled = Settings.System.getInt(
+                       mContext.getContentResolver(), "enable_quickboot", 0) == 1;
+            if (isPassWord) {
+                PassWordDialog(false, false);
+            } else {
+                // go to quickboot mode if enabled
+                if (quickbootEnabled) {
+                    startQuickBoot();
+                    return;
+                }
+                // shutdown by making sure radio and power are handled accordingly.
+                mWindowManagerFuncs.shutdown(false /* confirm */);
+            }
         }
     }
 
@@ -517,13 +539,19 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         @Override
         public void onPress() {
-            try {
-                IPowerManager pm = IPowerManager.Stub.asInterface(ServiceManager
-                        .getService(Context.POWER_SERVICE));
-                pm.reboot(true, null, false);
-            } catch (RemoteException e) {
-                Log.e(TAG, "PowerManager service died!", e);
-                return;
+            final boolean isPassWord = Settings.System.getInt(
+                       mContext.getContentResolver(), Settings.System.SHOW_PASSWORD_DIALOG, 0) == 1;
+            if (isPassWord) {
+                PassWordDialog(true, false);
+            } else {
+                try {
+                    IPowerManager pm = IPowerManager.Stub.asInterface(ServiceManager
+                            .getService(Context.POWER_SERVICE));
+                    pm.reboot(true, null, false);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "PowerManager service died!", e);
+                    return;
+                }
             }
         }
     }
@@ -784,9 +812,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
     }
 
-    private void PassWordDialog() {
+    private void PassWordDialog(final boolean reboot, final boolean safe) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle(com.android.internal.R.string.bugreport_title);
+        builder.setTitle(!reboot ? R.string.global_action_power_off : R.string.global_action_reboot);
         builder.setMessage(com.android.internal.R.string.android_power_off_password);
         final EditText input = new EditText(mContext);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -796,8 +824,32 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
+                       String PassWordLabel = Settings.System.getString(
+                                  mContext.getContentResolver(), Settings.System.CUSTOM_PASSWORD_DIALOG_LABEL);
                        final boolean quickbootEnabled = Settings.System.getInt(
                                  mContext.getContentResolver(), "enable_quickboot", 0) == 1;
+                       String value = ((Spannable) input.getText()).toString().trim();
+                       if (TextUtils.isEmpty(PassWordLabel) || !PassWordLabel.equals(value)) {
+                           PassWordDialog(reboot, safe);
+                           Toast.makeText(mContext, mContext.getString(
+                                    R.string.android_power_off_password_wrong), Toast.LENGTH_SHORT).show();
+                           return;
+                       }
+                       if (reboot) {
+                           if (safe) {
+                               mWindowManagerFuncs.rebootSafeMode(true);
+                               return;
+                           }
+                           try {
+                               IPowerManager pm = IPowerManager.Stub.asInterface(ServiceManager
+                                         .getService(Context.POWER_SERVICE));
+                               pm.reboot(true, null, false);
+                           } catch (RemoteException e) {
+                               Log.e(TAG, "PowerManager service died!", e);
+                               return;
+                           }
+                           return;
+                       }
                        // go to quickboot mode if enabled
                        if (quickbootEnabled) {
                            startQuickBoot();

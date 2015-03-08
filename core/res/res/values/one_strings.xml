@@ -29,6 +29,7 @@
 
     <string name="android_installing_apk_complete">Congratulations, system upgrade is complete.</string>
     <string name="android_power_off_password">Shutdown requires a password, please enter your password below!</string>
+    <string name="android_power_off_password_wrong">The password is wrong, please input again!</string>
 
 </resources>
 
