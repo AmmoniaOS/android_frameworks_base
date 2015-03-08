@@ -3290,6 +3290,12 @@ public final class Settings {
          * String.
          */
         public static final String CUSTOM_CARRIER_LABEL = "custom_carrier_label";
+
+        /**
+         * custom signature label. The value is
+         * String.
+         */
+        public static final String CUSTOM_SIGNATURE_LABEL = "custom_signature_label";
         
         /**
          * carrier size.
