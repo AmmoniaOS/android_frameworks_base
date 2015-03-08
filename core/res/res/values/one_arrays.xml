@@ -157,5 +157,38 @@
         <item>腊</item>
     </string-array>
 
+    <string-array name="solar_holiday_statutory_holidays">
+        <item>0101 假</item>
+        <item>0102 假</item>
+        <item>0103 假</item>
+        <item>0501 假</item>
+        <item>0502 假</item>
+        <item>0503 假</item>
+        <item>1001 假</item>
+        <item>1002 假</item>
+        <item>1003 假</item>
+        <item>1004 假</item>
+        <item>1005 假</item>
+        <item>1006 假</item>
+        <item>1007 假</item>
+    </string-array>
+
+    <string-array name="lunar_festival_statutory_holidays">
+        <item>腊月廿九 假</item>
+        <item>腊月三十 假</item>
+        <item>正月初一 假</item>
+        <item>正月初二 假</item>
+        <item>正月初三 假</item>
+        <item>正月初四 假</item>
+        <item>正月初五 假</item>
+        <item>正月初六 假</item>
+        <item>正月初七 假</item>
+        <item>五月初五 假</item>
+        <item>五月初六 假</item>
+        <item>五月初七 假</item>
+        <item>八月十五 假</item>
+        <item>八月十六 假</item>
+    </string-array>
+
 </resources>
 
