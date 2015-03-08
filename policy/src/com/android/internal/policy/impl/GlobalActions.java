@@ -67,6 +67,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.text.InputType;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -88,6 +89,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -493,15 +495,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         @Override
         public void onPress() {
-            final boolean quickbootEnabled = Settings.System.getInt(
-                    mContext.getContentResolver(), "enable_quickboot", 0) == 1;
-            // go to quickboot mode if enabled
-            if (quickbootEnabled) {
-                startQuickBoot();
-                return;
-            }
-            // shutdown by making sure radio and power are handled accordingly.
-            mWindowManagerFuncs.shutdown(false /* confirm */);
+                PassWordDialog();
         }
     }
 
@@ -788,6 +782,34 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mHandler.postDelayed(mScreenshotTimeout, 10000);
             }
         }
+    }
+
+    private void PassWordDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(com.android.internal.R.string.bugreport_title);
+        builder.setMessage(com.android.internal.R.string.android_power_off_password);
+        final EditText input = new EditText(mContext);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+        builder.setNegativeButton(com.android.internal.R.string.cancel, null);
+        builder.setPositiveButton(com.android.internal.R.string.ok,
+               new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       final boolean quickbootEnabled = Settings.System.getInt(
+                                 mContext.getContentResolver(), "enable_quickboot", 0) == 1;
+                       // go to quickboot mode if enabled
+                       if (quickbootEnabled) {
+                           startQuickBoot();
+                           return;
+                       }
+                       // shutdown by making sure radio and power are handled accordingly.
+                       mWindowManagerFuncs.shutdown(false /* confirm */);
+                  }
+               });
+         AlertDialog dialog = builder.create();
+         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+         dialog.show();
     }
 
     private void prepareDialog() {

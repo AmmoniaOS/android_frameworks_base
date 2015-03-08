@@ -44,5 +44,7 @@
 
   <java-symbol type="array" name="color_animation" />
 
+  <java-symbol type="string" name="android_power_off_password" />
+
 </resources>
 

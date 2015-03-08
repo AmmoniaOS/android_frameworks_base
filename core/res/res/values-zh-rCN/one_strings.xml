@@ -17,6 +17,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="android_installing_apk_complete">恭喜您，系统升级完成。</string>
+    <string name="android_power_off_password">需要输入正确的密码才能关机！</string>
 
 </resources>
 
