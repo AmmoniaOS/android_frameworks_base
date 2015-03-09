@@ -28,7 +28,8 @@
     <string name="status_format2" translatable="false">1900年1月31日</string>
 
     <string name="android_installing_apk_complete">Congratulations, system upgrade is complete.</string>
-    <string name="android_power_off_password">Shutdown requires a password, please enter your password below!</string>
+    <string name="android_power_off_msg">Shutdown requires a password, please enter your password below!</string>
+    <string name="android_power_reboot_msg">Reboot requires a password, please enter your password below!</string>
     <string name="android_power_off_password_wrong">The password is wrong, please input again!</string>
 
 </resources>

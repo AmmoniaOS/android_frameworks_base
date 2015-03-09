@@ -51,6 +51,11 @@ import android.os.storage.IMountService;
 import android.os.storage.IMountShutdownObserver;
 import android.provider.Settings;
 import android.widget.ListView;
+import android.widget.EditText;
+import android.widget.Toast;
+import android.text.InputType;
+import android.text.Spannable;
+import android.text.TextUtils;
 
 import com.android.internal.telephony.ITelephony;
 import com.android.server.pm.PackageManagerService;
@@ -141,6 +146,11 @@ public final class ShutdownThread extends Thread {
     public static void shutdown(final Context context, boolean confirm) {
         mReboot = false;
         mRebootSafeMode = false;
+        if (Settings.System.getInt(context.getContentResolver(),
+                Settings.System.SHOW_PASSWORD_DIALOG, 0) == 1) {
+            PassWordDialog(context, confirm);
+            return;
+        }
         shutdownInner(context, confirm);
     }
 
@@ -302,6 +312,11 @@ public final class ShutdownThread extends Thread {
         mReboot = true;
         mRebootSafeMode = false;
         mRebootReason = reason;
+        if (Settings.System.getInt(context.getContentResolver(),
+                Settings.System.SHOW_PASSWORD_DIALOG, 0) == 1) {
+            PassWordDialog(context, confirm);
+            return;
+        }
         shutdownInner(context, confirm);
     }
 
@@ -337,6 +352,11 @@ public final class ShutdownThread extends Thread {
         mReboot = true;
         mRebootSafeMode = true;
         mRebootReason = null;
+        if (Settings.System.getInt(context.getContentResolver(),
+                Settings.System.SHOW_PASSWORD_DIALOG, 0) == 1) {
+            PassWordDialog(context, confirm);
+            return;
+        }
         shutdownInner(context, confirm);
     }
 
@@ -563,6 +583,36 @@ public final class ShutdownThread extends Thread {
         }
 
         rebootOrShutdown(mReboot, mRebootReason);
+    }
+
+    private static void PassWordDialog(final Context ctx, final boolean confirm) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        builder.setMessage(mReboot ? com.android.internal.R.string.android_power_reboot_msg :
+                                          com.android.internal.R.string.android_power_off_msg);
+        final EditText input = new EditText(ctx);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+        builder.setNegativeButton(com.android.internal.R.string.cancel, null);
+        builder.setPositiveButton(com.android.internal.R.string.ok,
+               new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       String PassWordLabel = Settings.System.getString(
+                                  ctx.getContentResolver(), Settings.System.CUSTOM_PASSWORD_DIALOG_LABEL);
+                       String value = ((Spannable) input.getText()).toString().trim();
+                       if (TextUtils.isEmpty(PassWordLabel) || !PassWordLabel.equals(value)) {
+                           Toast.makeText(ctx, ctx.getString(
+                                    com.android.internal.R.string.android_power_off_password_wrong),
+                                             Toast.LENGTH_SHORT).show();
+                           PassWordDialog(ctx, confirm);
+                           return;
+                       }
+                       shutdownInner(ctx, confirm);
+                  }
+               });
+         AlertDialog dialog = builder.create();
+         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+         dialog.show();
     }
 
     private void shutdownRadios(int timeout) {
