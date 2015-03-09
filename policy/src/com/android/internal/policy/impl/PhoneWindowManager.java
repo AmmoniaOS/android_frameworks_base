@@ -1126,8 +1126,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case LONG_PRESS_POWER_SHUT_OFF_NO_CONFIRM:
                 boolean isClose = Settings.System.getInt(
                        mContext.getContentResolver(), Settings.System.FORCED_SHUTDOWN, 0) == 1;
-                if (isClose) return;
-
+                if (isClose) {
+                    mPowerKeyHandled = true;
+                    if (!performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false)) {
+                        performAuditoryFeedbackForAccessibilityIfNeed();
+                    }
+                    showGlobalActionsInternal();
+                    return;
+                }
                 mPowerKeyHandled = true;
                 performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
                 sendCloseSystemWindows(SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS);
