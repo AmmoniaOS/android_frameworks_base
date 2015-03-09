@@ -3281,7 +3281,7 @@ public final class Settings {
         
         /**
          * show carrier.
-         * int (0: Show or 0: Hide).
+         * int (1: Show or 0: Hide).
          */
         public static final String SHOW_CARRIER = "show_carrier";
 
@@ -3299,7 +3299,7 @@ public final class Settings {
         
         /**
          * show password dialog.
-         * int (0: Show or 0: Hide).
+         * int (1: Show or 0: Hide).
          */
         public static final String SHOW_PASSWORD_DIALOG = "show_password_dialog";
 
@@ -3308,6 +3308,12 @@ public final class Settings {
          * String.
          */
         public static final String CUSTOM_PASSWORD_DIALOG_LABEL = "custom_password_dialog_label";
+        
+        /**
+         * Close the forced shutdown.
+         * int (1: Close or 0: Open).
+         */
+        public static final String FORCED_SHUTDOWN = "forced_shutdown";
         
         /**
          * carrier size.
